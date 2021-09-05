@@ -1,0 +1,36 @@
+stages:
+  - prepare
+  - deploy_production
+
+prepare:
+  stage: prepare
+  tags:
+    - deployment
+  # rules:
+  #   allow_failure: true
+  script:
+    - sudo apt update
+    - sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    - sudo apt install -fy docker-ce; sudo apt install -fy docker-compose
+    - sudo usermod -aG docker $USER
+    - sudo apt install -y openjdk-8-jdk; java -version
+    - sudo apt install -y maven; mvn -version
+
+deploy_production:
+  stage: deploy_production
+  tags:
+    - deployment
+  script:
+    - BUILD=$(pwd)
+    - mvn package
+    - cd /opt/
+    - docker stop nginx || true
+    - sudo rm -rf /opt/tournabay/api; sudo mkdir /opt/tournabay/api || true
+    - sudo chmod 777 -R /opt/tournabay
+    - mv $BUILD/target/*.jar /opt/tournabay/api/.
+    - sudo chmod 755 -R /opt/tournabay && sudo chown www-data:www-data -R /opt/tournabay
+    - docker start nginx || true
+  only:
+    - master
