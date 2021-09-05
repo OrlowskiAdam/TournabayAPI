@@ -63,6 +63,7 @@ app:
   oauth2:
     authorizedRedirectUris:
       - http://localhost:3000/oauth2/redirect
+      - https://tournabay.com/oauth2/redirect
       - http://localhost:8080/oauth2/redirect
       - http://localhost:8080/oauth2/oauth2-redirect
       - http://localhost:8080/oauth2/osu-oauth2-redirect
