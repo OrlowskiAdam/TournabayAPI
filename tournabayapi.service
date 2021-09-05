@@ -3,8 +3,6 @@ Description=Tournabay API
 
 [Service]
 User=root
-WorkingDirectory=/opt/tournabay/api/
-#ExecStart=/opt/tournabay/api/tournabayapi
 ExecStart=/usr/bin/java -jar /opt/tournabay/api/api-0.0.1-SNAPSHOT.jar
 Restart=on-failure
 RestartSec=5
