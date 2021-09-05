@@ -27,11 +27,13 @@ deploy_production:
     - mvn package
     - cd /opt/
     - docker stop nginx || true
+    - sudo systemctl stop tournabayapi.service
     - sudo rm -rf /opt/tournabay/api; sudo mkdir /opt/tournabay/api || true
     - sudo chmod 777 -R /opt/tournabay
     - mv $BUILD/target/*.jar /opt/tournabay/api/.
     - sudo mv $BUILD/tournabayapi.service /etc/systemd/system/.
     - sudo chmod 644 -R /etc/systemd/system/tournabayapi.service && sudo chown root:root /etc/systemd/system/tournabayapi.service
+    - sudo systemctl daemon-reload
     - sudo systemctl start tournabayapi.service
     - sudo systemctl enable --now tournabayapi.service
     - sudo systemctl status tournabayapi.service
