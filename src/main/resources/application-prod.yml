@@ -4,9 +4,9 @@ logging:
       pircbotx: OFF
 spring:
   datasource:
-    url: jdbc:mysql://web03.bero-host.de:3306/testdb?autoReconnect=true&serverTimezone=UTC
-    username: adam
-    password: hehexd33
+    url: jdbc:mysql://localhost:3306/database?autoReconnect=true&serverTimezone=UTC
+    username: root
+    password: adamo123
     tomcat:
       test-while-idle: true
       time-between-eviction-runs-millis: 60000
