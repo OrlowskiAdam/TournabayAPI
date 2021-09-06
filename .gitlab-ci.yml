@@ -17,7 +17,6 @@ prepare:
     - sudo usermod -aG docker $USER
     - sudo apt install -y openjdk-8-jdk; java -version
     - sudo apt install -y maven; mvn -version
-    - telnet localhost 3306
 
 deploy_production:
   stage: deploy_production
