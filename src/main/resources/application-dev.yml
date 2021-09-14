@@ -4,9 +4,9 @@ logging:
       pircbotx: OFF
 spring:
   datasource:
-    url: jdbc:mysql://web03.bero-host.de:3306/testdb?autoReconnect=true&serverTimezone=UTC
-    username: adam
-    password: hehexd33
+    url: jdbc:postgresql://51.83.186.79:5433/tournabaytest
+    username: test
+    password: test
     tomcat:
       test-while-idle: true
       time-between-eviction-runs-millis: 60000
@@ -17,14 +17,15 @@ spring:
       validation-query: SELECT 1
     hikari:
       max-lifetime: 600000
+    driver-class-name: org.postgresql.Driver
+    properties:
+      hibernate:
+        dialect: PosgreSQLDialect
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
   security:
     oauth2:
       client:
