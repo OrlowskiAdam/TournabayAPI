@@ -1,54 +1,65 @@
 package com.tournabay.api.model;
 
-import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
+@SuperBuilder
 @NoArgsConstructor
-@Getter
-@Setter
-public class Tournament {
-
-    public Tournament(@NotNull String name, @NotNull LocalDateTime startDate, @NotNull LocalDateTime endDate, @NotNull ScoreType scoreType, @NotNull User owner) {
-        this.name = name;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.scoreType = scoreType;
-        this.owner = owner;
-    }
+@Data
+public abstract class Tournament {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter(AccessLevel.NONE)
-    private Long id;
+    protected Long id;
 
     @NotNull
-    private String name;
+    protected String name;
 
     @NotNull
-    private LocalDateTime startDate;
+    protected LocalDateTime createdAt;
 
     @NotNull
-    private LocalDateTime endDate;
+    protected LocalDateTime updatedAt;
+
+    @NotNull
+    protected LocalDateTime startDate;
+
+    @NotNull
+    protected LocalDateTime endDate;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private GameMode gameMode;
+    protected GameMode gameMode;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private ScoreType scoreType;
+    protected ScoreType scoreType;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    protected TeamFormat teamFormat;
 
     @ManyToOne
     @NotNull
-    private User owner;
+    protected User owner;
+
+    @PrePersist
+    private void onPrePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void onPreUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
 //    @OneToMany
-//    private Set<User> hosts = new HashSet<>();
+//    protected Set<User> hosts = new HashSet<>();
 }
