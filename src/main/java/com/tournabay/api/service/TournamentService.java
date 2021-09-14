@@ -1,21 +1,49 @@
 package com.tournabay.api.service;
 
-import com.tournabay.api.model.ScoreType;
-import com.tournabay.api.model.Tournament;
-import com.tournabay.api.model.User;
+import com.tournabay.api.exception.BadRequestException;
+import com.tournabay.api.exception.ResourceNotFoundException;
+import com.tournabay.api.model.*;
+import com.tournabay.api.payload.CreateTournamentRequest;
 import com.tournabay.api.repository.TournamentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class TournamentService {
     private final TournamentRepository tournamentRepository;
 
-    public Tournament createTournament(String name, ScoreType scoreType, LocalDateTime startDate, LocalDateTime endDate, User owner) {
-        Tournament tournament = new Tournament(name, startDate, endDate, scoreType, owner);
-        return tournamentRepository.save(tournament);
+    public Tournament getTournamentById(Long id) {
+        return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
+    }
+
+    public Tournament createTournament(CreateTournamentRequest body, User owner) {
+        if (body.getTeamFormat().equals(TeamFormat.TEAM_VS)) {
+            TeamBasedTournament tournament = TeamBasedTournament
+                    .builder()
+                    .name(body.getName())
+                    .gameMode(body.getGameMode())
+                    .scoreType(body.getScoreType())
+                    .teamFormat(body.getTeamFormat())
+                    .startDate(body.getStartDate())
+                    .endDate(body.getEndDate())
+                    .owner(owner)
+                    .build();
+            return tournamentRepository.save(tournament);
+        } else if (body.getTeamFormat().equals(TeamFormat.PLAYER_VS)) {
+            PlayerBasedTournament tournament = PlayerBasedTournament
+                    .builder()
+                    .name(body.getName())
+                    .gameMode(body.getGameMode())
+                    .scoreType(body.getScoreType())
+                    .teamFormat(body.getTeamFormat())
+                    .startDate(body.getStartDate())
+                    .endDate(body.getEndDate())
+                    .owner(owner)
+                    .build();
+            return tournamentRepository.save(tournament);
+        }
+
+        throw new BadRequestException("Unsupported team format");
     }
 }
