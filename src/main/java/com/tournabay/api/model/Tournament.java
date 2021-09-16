@@ -54,7 +54,10 @@ public abstract class Tournament {
     protected List<StaffMember> staffMembers;
 
     @OneToMany
-    protected List<TournamentRole> tournamentRoles;
+    protected List<TournamentRole> roles;
+
+    @OneToMany
+    protected List<Page> pages;
 
     @PrePersist
     private void onPrePersist() {
