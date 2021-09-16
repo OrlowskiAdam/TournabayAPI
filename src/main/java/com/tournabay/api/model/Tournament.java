@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @SuperBuilder
@@ -45,9 +46,15 @@ public abstract class Tournament {
     @Enumerated(EnumType.STRING)
     protected TeamFormat teamFormat;
 
-    @ManyToOne
     @NotNull
+    @ManyToOne
     protected User owner;
+
+    @OneToMany
+    protected List<StaffMember> staffMembers;
+
+    @OneToMany
+    protected List<TournamentRole> tournamentRoles;
 
     @PrePersist
     private void onPrePersist() {
@@ -59,7 +66,4 @@ public abstract class Tournament {
     private void onPreUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-//    @OneToMany
-//    protected Set<User> hosts = new HashSet<>();
 }
