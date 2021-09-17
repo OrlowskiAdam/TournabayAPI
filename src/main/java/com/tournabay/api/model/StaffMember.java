@@ -1,6 +1,7 @@
 package com.tournabay.api.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class StaffMember {
@@ -12,6 +13,6 @@ public class StaffMember {
     @ManyToOne
     private User user;
 
-    @ManyToOne
-    private TournamentRole tournamentRole;
+    @ManyToMany
+    private List<TournamentRole> tournamentRole;
 }
