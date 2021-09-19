@@ -26,6 +26,7 @@ prepare_database:
   script:
     - docker rm -f database || true
     - sudo mkdir /opt/postgres || true
+    - sudo chmod 755 -R /opt/postgres && sudo chown root:root -R /opt/postgres
     - docker run --name database --network host -v /opt/postgres:/var/lib/postgresql/data -e POSTGRES_USER=adam -e POSTGRES_PASSWORD=adam -d postgres:13.4 || true
     - docker exec -i database bash -c "createdb -U adam tournabay-prod" || true
     - docker exec -i database bash -c "createdb -U adam tournabay-dev" || true
