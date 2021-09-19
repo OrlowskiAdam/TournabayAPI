@@ -24,7 +24,9 @@ prepare_database:
   tags:
     - deployment
   script:
-    - docker run --name database --network host -e POSTGRES_PASSWORD=adam -e POSTGRES_MULTIPLE_DATABASES=tournabay-prod,tournabay-dev -d postgres:13.4 || true
+    - docker run --name database --network host -e POSTGRES_USER=adam -e POSTGRES_PASSWORD=adam -d postgres:13.4
+    - docker exec -it database bash -c "sudo -u adam -c 'createdb tournabay-prod'"
+    - docker exec -it database bash -c "sudo -u adam -c 'createdb tournabay-dev'"
 
 deploy_production:
   stage: deploy_production
