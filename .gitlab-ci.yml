@@ -25,8 +25,8 @@ prepare_database:
     - deployment
   script:
     - docker run --name database --network host -e POSTGRES_USER=adam -e POSTGRES_PASSWORD=adam -d postgres:13.4 || true
-    - docker exec -it database bash -c "createdb -U adam tournabay-prod"
-    - docker exec -it database bash -c "createdb -U adam tournabay-dev"
+    - docker exec -i database bash -c "createdb -U adam tournabay-prod"
+    - docker exec -i database bash -c "createdb -U adam tournabay-dev"
 
 deploy_production:
   stage: deploy_production
