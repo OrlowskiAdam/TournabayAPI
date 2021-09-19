@@ -1,5 +1,6 @@
 stages:
   - prepare
+  - prepare_database
   - deploy_production
 
 prepare:
@@ -17,6 +18,13 @@ prepare:
 #    - sudo usermod -aG docker $USER
     - sudo apt install -y openjdk-8-jdk; java -version
     - sudo apt install -y maven; mvn -version
+
+prepare_database:
+  stage: prepare_database
+  tags:
+    - deployment
+  script:
+    - docker run --name database --network host -e POSTGRES_PASSWORD=adam -e POSTGRES_MULTIPLE_DATABASES=tournabay-prod,tournabay-dev -d postgres:13.4 || true
 
 deploy_production:
   stage: deploy_production
