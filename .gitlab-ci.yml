@@ -1,5 +1,6 @@
 stages:
   - prepare
+  - prepare_database
   - deploy_production
 
 prepare:
@@ -11,12 +12,24 @@ prepare:
   script:
     - sudo apt update
     - sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
-    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    - sudo apt install -fy docker-ce; sudo apt install -fy docker-compose
-    - sudo usermod -aG docker $USER
+#    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+#    - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+#    - sudo apt install -fy docker-ce; sudo apt install -fy docker-compose
+#    - sudo usermod -aG docker $USER
     - sudo apt install -y openjdk-8-jdk; java -version
     - sudo apt install -y maven; mvn -version
+
+prepare_database:
+  stage: prepare_database
+  tags:
+    - deployment
+  script:
+    - docker rm -f database || true
+    - sudo mkdir /opt/postgres || true
+    - sudo chmod 755 -R /opt/postgres && sudo chown root:root -R /opt/postgres
+    - docker run --name database --network host -v /opt/postgres:/var/lib/postgresql/data -e POSTGRES_USER=adam -e POSTGRES_PASSWORD=adam -d postgres:13.4 || true
+    - docker exec -i database bash -c "createdb -U adam tournabay-prod" || true
+    - docker exec -i database bash -c "createdb -U adam tournabay-dev" || true
 
 deploy_production:
   stage: deploy_production
@@ -25,9 +38,9 @@ deploy_production:
   script:
     - BUILD=$(pwd)
     - mvn package
-    - cd /opt/
     - docker stop nginx || true
-    - sudo systemctl stop tournabayapi.service
+    - sudo systemctl stop tournabayapi.service || true
+    - cd /opt
     - sudo rm -rf /opt/tournabay/api; sudo mkdir /opt/tournabay/api || true
     - sudo chmod 777 -R /opt/tournabay
     - mv $BUILD/target/*.jar /opt/tournabay/api/.

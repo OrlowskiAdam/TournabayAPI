@@ -4,9 +4,9 @@ logging:
       pircbotx: OFF
 spring:
   datasource:
-    url: jdbc:postgresql://51.83.186.79:5433/tournabaytest
-    username: test
-    password: test
+    url: jdbc:postgresql://127.0.0.1:5432/tournabay-dev
+    username: adam
+    password: adam
     tomcat:
       test-while-idle: true
       time-between-eviction-runs-millis: 60000
