@@ -15,4 +15,8 @@ public class UserService {
     public User getUserFromPrincipal(UserPrincipal userPrincipal) {
         return userRepository.findById(userPrincipal.getId()).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
     }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
 }

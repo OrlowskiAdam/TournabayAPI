@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,5 +18,5 @@ import java.util.List;
 public class PlayerBasedTournament extends Tournament {
 
     @OneToMany
-    private List<Participant> players;
+    private List<Participant> players = new ArrayList<>();
 }

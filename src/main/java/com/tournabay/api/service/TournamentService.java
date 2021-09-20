@@ -17,6 +17,10 @@ public class TournamentService {
         return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
     }
 
+    public Tournament save(Tournament tournament) {
+        return tournamentRepository.save(tournament);
+    }
+
     public Tournament createTournament(CreateTournamentRequest body, User owner) {
         if (body.getTeamFormat().equals(TeamFormat.TEAM_VS)) {
             TeamBasedTournament tournament = TeamBasedTournament
