@@ -46,7 +46,7 @@ public class TournamentController {
     @GetMapping("/k")
     public Tournament createFakePlayers() {
         PlayerBasedTournament tournament = (PlayerBasedTournament) tournamentService.getTournamentById(1L);
-        User user = userService.getUserById(2L);
+        User user = userService.getUserById(1L);
         Participant participant = new Participant();
         participant.setUser(user);
         participant.setJoinedAt(LocalDateTime.now());
