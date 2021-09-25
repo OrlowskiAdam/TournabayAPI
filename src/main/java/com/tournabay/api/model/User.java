@@ -62,13 +62,19 @@ public class User {
             @NotNull Long osuId,
             String avatarUrl,
             @NotNull AuthProvider provider,
-            Set<Role> roles
+            Set<Role> roles,
+            int rank,
+            int performancePoints,
+            String countryCode
     ) {
         this.username = username;
         this.osuId = osuId;
         this.avatarUrl = avatarUrl;
         this.provider = provider;
         this.roles = roles;
+        this.rank = rank;
+        this.performancePoints = performancePoints;
+        this.countryCode = countryCode;
     }
 
     @Id

@@ -5,8 +5,10 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -53,11 +55,16 @@ public abstract class Tournament {
     @OneToMany
     protected List<StaffMember> staffMembers;
 
-    @OneToMany
-    protected List<TournamentRole> roles;
+    @NotEmpty
+    @OneToMany(mappedBy = "tournament")
+    protected List<TournamentRole> roles = new ArrayList<>();
 
+    @NotEmpty
     @OneToMany
     protected List<Page> pages;
+
+    @OneToMany(mappedBy = "tournament")
+    private List<Participant> players = new ArrayList<>();
 
     @PrePersist
     private void onPrePersist() {
@@ -68,5 +75,9 @@ public abstract class Tournament {
     @PreUpdate
     private void onPreUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean containsParticipant(Participant participant) {
+        return this.players.stream().anyMatch(o -> o.getUser().getId().equals(participant.getUser().getId()));
     }
 }

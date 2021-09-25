@@ -4,7 +4,7 @@ logging:
       pircbotx: OFF
 spring:
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/tournabay-dev
+    url: jdbc:postgresql://94.251.186.176:5555/db-dev
     username: adam
     password: adam
     tomcat:

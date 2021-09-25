@@ -23,7 +23,8 @@ public class Role {
 
     }
 
-    public Role(RoleName name) {
+    public Role(Long id, RoleName name) {
+        this.id = id;
         this.name = name;
     }
 

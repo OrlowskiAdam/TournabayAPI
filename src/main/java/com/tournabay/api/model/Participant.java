@@ -1,5 +1,6 @@
 package com.tournabay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,5 +26,13 @@ public class Participant {
 
     @ManyToOne
     private User user;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private ParticipantStatus participantStatus;
+
+    @JsonIgnore
+    @ManyToOne(targetEntity = Tournament.class)
+    private Tournament tournament;
 
 }

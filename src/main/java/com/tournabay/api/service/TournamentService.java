@@ -6,12 +6,15 @@ import com.tournabay.api.model.*;
 import com.tournabay.api.payload.CreateTournamentRequest;
 import com.tournabay.api.repository.TournamentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class TournamentService {
     private final TournamentRepository tournamentRepository;
+    private final ParticipantService participantService;
+    private final TournamentRoleService tournamentRoleService;
 
     public Tournament getTournamentById(Long id) {
         return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
@@ -19,6 +22,14 @@ public class TournamentService {
 
     public Tournament save(Tournament tournament) {
         return tournamentRepository.save(tournament);
+    }
+
+    public Participant addParticipant(Tournament tournament, Participant participant) {
+        if (!tournament.containsParticipant(participant)) {
+            participant.setTournament(tournament);
+            return participantService.save(participant);
+        }
+        throw new BadRequestException(participant.getUser().getUsername() + " is already a participant!");
     }
 
     public Tournament createTournament(CreateTournamentRequest body, User owner) {
@@ -33,7 +44,9 @@ public class TournamentService {
                     .endDate(body.getEndDate())
                     .owner(owner)
                     .build();
-            return tournamentRepository.save(tournament);
+            Tournament newTournament = tournamentRepository.save(tournament);
+            tournamentRoleService.createDefaultTournamentRoles(newTournament);
+            return newTournament;
         } else if (body.getTeamFormat().equals(TeamFormat.PLAYER_VS)) {
             PlayerBasedTournament tournament = PlayerBasedTournament
                     .builder()
@@ -45,7 +58,9 @@ public class TournamentService {
                     .endDate(body.getEndDate())
                     .owner(owner)
                     .build();
-            return tournamentRepository.save(tournament);
+            Tournament newTournament = tournamentRepository.save(tournament);
+            tournamentRoleService.createDefaultTournamentRoles(newTournament);
+            return newTournament;
         }
 
         throw new BadRequestException("Unsupported team format");
