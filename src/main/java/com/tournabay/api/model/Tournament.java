@@ -52,15 +52,15 @@ public abstract class Tournament {
     @ManyToOne
     protected User owner;
 
-    @OneToMany
-    protected List<StaffMember> staffMembers;
+    @OneToMany(mappedBy = "tournament")
+    protected List<StaffMember> staffMembers = new ArrayList<>();
 
     @NotEmpty
     @OneToMany(mappedBy = "tournament")
     protected List<TournamentRole> roles = new ArrayList<>();
 
     @NotEmpty
-    @OneToMany
+    @OneToMany(mappedBy = "tournament")
     protected List<Page> pages;
 
     @OneToMany(mappedBy = "tournament")
@@ -79,5 +79,9 @@ public abstract class Tournament {
 
     public boolean containsParticipant(Participant participant) {
         return this.players.stream().anyMatch(o -> o.getUser().getId().equals(participant.getUser().getId()));
+    }
+
+    public boolean containsStaffMember(StaffMember staffMember) {
+        return this.staffMembers.stream().anyMatch(o -> o.getUser().getId().equals(staffMember.getUser().getId()));
     }
 }

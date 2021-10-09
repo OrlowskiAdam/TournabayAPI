@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TournamentService {
@@ -32,6 +35,7 @@ public class TournamentService {
         throw new BadRequestException(participant.getUser().getUsername() + " is already a participant!");
     }
 
+    @Transactional
     public Tournament createTournament(CreateTournamentRequest body, User owner) {
         if (body.getTeamFormat().equals(TeamFormat.TEAM_VS)) {
             TeamBasedTournament tournament = TeamBasedTournament
@@ -45,7 +49,8 @@ public class TournamentService {
                     .owner(owner)
                     .build();
             Tournament newTournament = tournamentRepository.save(tournament);
-            tournamentRoleService.createDefaultTournamentRoles(newTournament);
+            List<TournamentRole> defaultTournamentRoles = tournamentRoleService.createDefaultTournamentRoles(newTournament);
+
             return newTournament;
         } else if (body.getTeamFormat().equals(TeamFormat.PLAYER_VS)) {
             PlayerBasedTournament tournament = PlayerBasedTournament

@@ -1,13 +1,19 @@
 package com.tournabay.api.model;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
+@SuperBuilder
 @NoArgsConstructor
+@Getter
+@Setter
 public class Page {
 
     @Id
@@ -18,8 +24,8 @@ public class Page {
     private String path;
 
     @OneToMany
-    private List<TournamentRole> roles;
+    private List<Permission> permissions;
 
-    @OneToMany
-    private List<User> users;
+    @ManyToOne
+    private Tournament tournament;
 }

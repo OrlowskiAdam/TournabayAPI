@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -14,8 +15,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class TournamentRole {
 
-    public TournamentRole(String role, Tournament tournament, boolean isProtected) {
-        this.role = role;
+    public TournamentRole(String name, Tournament tournament, boolean isProtected) {
+        this.name = name;
         this.tournament = tournament;
         this.isProtected = isProtected;
     }
@@ -25,7 +26,7 @@ public class TournamentRole {
     private Long id;
 
     @NotNull
-    private String role;
+    private String name;
 
     @Lob
     private String description;
