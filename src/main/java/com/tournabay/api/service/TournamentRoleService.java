@@ -1,10 +1,13 @@
 package com.tournabay.api.service;
 
+import com.tournabay.api.exception.BadRequestException;
 import com.tournabay.api.exception.ResourceNotFoundException;
 import com.tournabay.api.exception.SecurityBreachException;
 import com.tournabay.api.model.*;
+import com.tournabay.api.repository.StaffMemberRepository;
 import com.tournabay.api.repository.TournamentRoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,6 +41,14 @@ public class TournamentRoleService {
         return foundRoles;
     }
 
+    public TournamentRole getRoleById(Long id, Tournament tournament) {
+        List<TournamentRole> roles = tournament.getRoles();
+        for (TournamentRole role : roles) {
+            if (role.getId().equals(id)) return role;
+        }
+        throw new ResourceNotFoundException("Role not found!");
+    }
+
     public TournamentRole getRoleByName(String roleName, Tournament tournament) {
         List<TournamentRole> roles = tournament.getRoles();
         for (TournamentRole role : roles) {
@@ -46,12 +57,12 @@ public class TournamentRoleService {
         throw new ResourceNotFoundException(roleName + " not found!");
     }
 
-    public TournamentRole createRole(String roleName, Tournament tournament) {
-        return tournamentRoleRepository.save(new TournamentRole(roleName, tournament, false));
+    public TournamentRole createRole(String roleName, boolean isHidden, Tournament tournament) {
+        return tournamentRoleRepository.save(new TournamentRole(roleName, tournament, false, isHidden));
     }
 
-    public TournamentRole createRole(String roleName, Long inheritRoleId, Tournament tournament) {
-        TournamentRole tournamentRole = createRole(roleName, tournament);
+    public TournamentRole createRole(String roleName, Long inheritRoleId, boolean isHidden, Tournament tournament) {
+        TournamentRole tournamentRole = createRole(roleName, isHidden, tournament);
         TournamentRole savedRole = save(tournamentRole);
         List<Page> pages = tournament.getPages();
         for (Page page : pages) {
@@ -76,13 +87,26 @@ public class TournamentRoleService {
 
     public List<TournamentRole> createDefaultTournamentRoles(Tournament tournament) {
         List<TournamentRole> tournamentRoles = new ArrayList<>();
-        tournamentRoles.add(new TournamentRole("Host", tournament, true));
-        tournamentRoles.add(new TournamentRole("Organizer", tournament, false));
-        tournamentRoles.add(new TournamentRole("Pooler", tournament, false));
-        tournamentRoles.add(new TournamentRole("Referee", tournament, false));
-        tournamentRoles.add(new TournamentRole("Commentator", tournament, false));
-        tournamentRoles.add(new TournamentRole("Streamer", tournament, false));
-        tournamentRoles.add(new TournamentRole("Uncategorized", tournament, true));
+        tournamentRoles.add(new TournamentRole("Host", tournament, true, false));
+        tournamentRoles.add(new TournamentRole("Organizer", tournament, false, false));
+        tournamentRoles.add(new TournamentRole("Pooler", tournament, false, false));
+        tournamentRoles.add(new TournamentRole("Referee", tournament, false, false));
+        tournamentRoles.add(new TournamentRole("Commentator", tournament, false, false));
+        tournamentRoles.add(new TournamentRole("Streamer", tournament, false, false));
+        TournamentRole defaultRole = new TournamentRole("Uncategorized", tournament, true, false);
+        tournamentRoles.add(defaultRole);
+        tournament.setDefaultRole(defaultRole);
         return tournamentRoleRepository.saveAll(tournamentRoles);
+    }
+
+    public TournamentRole updateRole(TournamentRole tournamentRole, String roleName, Boolean isHidden) {
+        tournamentRole.setName(roleName);
+        tournamentRole.setIsHidden(isHidden);
+        return tournamentRoleRepository.save(tournamentRole);
+    }
+
+    public TournamentRole removeRole(TournamentRole tournamentRole, List<StaffMember> associatedStaffMembers, Tournament tournament) {
+        tournamentRoleRepository.delete(tournamentRole);
+        return tournamentRole;
     }
 }

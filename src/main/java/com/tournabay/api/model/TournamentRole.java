@@ -15,10 +15,11 @@ import java.util.List;
 @NoArgsConstructor
 public class TournamentRole {
 
-    public TournamentRole(String name, Tournament tournament, boolean isProtected) {
+    public TournamentRole(String name, Tournament tournament, boolean isProtected, boolean isHidden) {
         this.name = name;
         this.tournament = tournament;
         this.isProtected = isProtected;
+        this.isHidden = isHidden;
     }
 
     @Id
@@ -33,6 +34,9 @@ public class TournamentRole {
 
     @NotNull
     private Boolean isProtected;
+
+    @NotNull
+    private Boolean isHidden;
 
     @JsonIgnore
     @NotNull

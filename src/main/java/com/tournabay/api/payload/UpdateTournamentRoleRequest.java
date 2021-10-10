@@ -3,8 +3,8 @@ package com.tournabay.api.payload;
 import lombok.Getter;
 
 @Getter
-public class CreateTournamentRoleRequest {
+public class UpdateTournamentRoleRequest {
+    private Long roleId;
     private String roleName;
-    private Long inherit;
     private Boolean isHidden;
 }

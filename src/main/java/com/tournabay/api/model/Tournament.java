@@ -1,5 +1,6 @@
 package com.tournabay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -35,6 +36,11 @@ public abstract class Tournament {
 
     @NotNull
     protected LocalDateTime endDate;
+
+    @NotNull
+    @JsonIgnore
+    @OneToOne
+    protected TournamentRole defaultRole;
 
     @NotNull
     @Enumerated(EnumType.STRING)

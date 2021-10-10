@@ -16,7 +16,6 @@ import java.util.List;
 public class StaffMemberService {
     private final StaffMemberRepository staffMemberRepository;
     private final UserService userService;
-    private final TournamentService tournamentService;
     private final TournamentRoleService tournamentRoleService;
 
     public StaffMember save(StaffMember staffMember) {
@@ -41,6 +40,20 @@ public class StaffMemberService {
         }
         if (foundMembers.size() != ids.size()) throw new SecurityBreachException("You shouldn't be here");
         return foundMembers;
+    }
+
+    public List<StaffMember> getStaffMembersByTournamentRole(TournamentRole tournamentRole, Tournament tournament) {
+        List<TournamentRole> tournamentRoles = tournament.getRoles();
+        if (!tournamentRoles.contains(tournamentRole)) throw new BadRequestException("This role is not from this tournament");
+        List<StaffMember> staffMembers = tournament.getStaffMembers();
+        List<StaffMember> foundStaffMembers = new ArrayList<>();
+        for (StaffMember staffMember : staffMembers) {
+            List<TournamentRole> roles = staffMember.getTournamentRoles();
+            for (TournamentRole role : roles) {
+                if (role.getId().equals(tournamentRole.getId())) foundStaffMembers.add(staffMember);
+            }
+        }
+        return foundStaffMembers;
     }
 
     public StaffMember addStaffMember(Long osuId, Tournament tournament, List<TournamentRole> tournamentRoles) {
@@ -92,5 +105,17 @@ public class StaffMemberService {
         } catch (NumberFormatException e) {
             throw new BadRequestException("Wrong discord ID format!");
         }
+    }
+
+    public List<StaffMember> disconnectTournamentRoleFromStaffMember(TournamentRole tournamentRole, List<StaffMember> associatedStaffMembers, Tournament tournament) {
+        if (tournamentRole.getId().equals(tournament.getDefaultRole().getId())) throw new BadRequestException("You cannot remove default role!");
+        for (StaffMember staffMember : associatedStaffMembers) {
+            List<TournamentRole> roles = staffMember.getTournamentRoles();
+            if (roles.size() == 1 && roles.get(0).getId().equals(tournamentRole.getId())) {
+                roles.add(tournament.getDefaultRole());
+            }
+            roles.removeIf(role -> role.getId().equals(tournamentRole.getId()));
+        }
+        return staffMemberRepository.saveAll(associatedStaffMembers);
     }
 }
