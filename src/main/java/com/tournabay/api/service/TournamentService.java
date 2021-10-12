@@ -49,8 +49,7 @@ public class TournamentService {
                     .owner(owner)
                     .build();
             Tournament newTournament = tournamentRepository.save(tournament);
-            List<TournamentRole> defaultTournamentRoles = tournamentRoleService.createDefaultTournamentRoles(newTournament);
-
+            tournamentRoleService.createDefaultTournamentRoles(newTournament);
             return newTournament;
         } else if (body.getTeamFormat().equals(TeamFormat.PLAYER_VS)) {
             PlayerBasedTournament tournament = PlayerBasedTournament
