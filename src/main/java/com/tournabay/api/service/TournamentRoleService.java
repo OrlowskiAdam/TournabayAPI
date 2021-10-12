@@ -87,7 +87,8 @@ public class TournamentRoleService {
 
     public List<TournamentRole> createDefaultTournamentRoles(Tournament tournament) {
         List<TournamentRole> tournamentRoles = new ArrayList<>();
-        tournamentRoles.add(new TournamentRole("Host", tournament, true, false));
+        TournamentRole masterRole = new TournamentRole("Host", tournament, true, false);
+        tournamentRoles.add(masterRole);
         tournamentRoles.add(new TournamentRole("Organizer", tournament, false, false));
         tournamentRoles.add(new TournamentRole("Pooler", tournament, false, false));
         tournamentRoles.add(new TournamentRole("Referee", tournament, false, false));
@@ -96,6 +97,7 @@ public class TournamentRoleService {
         TournamentRole defaultRole = new TournamentRole("Uncategorized", tournament, true, false);
         tournamentRoles.add(defaultRole);
         tournament.setDefaultRole(defaultRole);
+        tournament.setMasterRole(masterRole);
         return tournamentRoleRepository.saveAll(tournamentRoles);
     }
 
