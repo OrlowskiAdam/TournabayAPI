@@ -43,6 +43,11 @@ public abstract class Tournament {
     protected TournamentRole defaultRole;
 
     @NotNull
+    @JsonIgnore
+    @OneToOne
+    protected TournamentRole masterRole;
+
+    @NotNull
     @Enumerated(EnumType.STRING)
     protected GameMode gameMode;
 
