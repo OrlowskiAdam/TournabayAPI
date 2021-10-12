@@ -1,13 +1,10 @@
 package com.tournabay.api.service;
 
-import com.tournabay.api.exception.BadRequestException;
 import com.tournabay.api.exception.ResourceNotFoundException;
 import com.tournabay.api.exception.SecurityBreachException;
 import com.tournabay.api.model.*;
-import com.tournabay.api.repository.StaffMemberRepository;
 import com.tournabay.api.repository.TournamentRoleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
