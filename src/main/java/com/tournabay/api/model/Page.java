@@ -1,5 +1,6 @@
 package com.tournabay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +27,7 @@ public class Page {
     @OneToMany
     private List<Permission> permissions;
 
+    @JsonIgnore
     @ManyToOne
     private Tournament tournament;
 }

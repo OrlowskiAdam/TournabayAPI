@@ -13,7 +13,7 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @Getter
 @Setter
-public abstract class Permission {
+public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

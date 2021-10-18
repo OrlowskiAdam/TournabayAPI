@@ -18,6 +18,7 @@ public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final ParticipantService participantService;
     private final TournamentRoleService tournamentRoleService;
+    private final PageService pageService;
 
     public Tournament getTournamentById(Long id) {
         return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
@@ -35,6 +36,7 @@ public class TournamentService {
         throw new BadRequestException(participant.getUser().getUsername() + " is already a participant!");
     }
 
+    // TODO: Code clean-up
     @Transactional
     public Tournament createTournament(CreateTournamentRequest body, User owner) {
         if (body.getTeamFormat().equals(TeamFormat.TEAM_VS)) {
@@ -49,7 +51,8 @@ public class TournamentService {
                     .owner(owner)
                     .build();
             Tournament newTournament = tournamentRepository.save(tournament);
-            tournamentRoleService.createDefaultTournamentRoles(newTournament);
+            List<TournamentRole> defaultTournamentRoles = tournamentRoleService.createDefaultTournamentRoles(newTournament);
+            pageService.createTournamentPages(defaultTournamentRoles, newTournament);
             return newTournament;
         } else if (body.getTeamFormat().equals(TeamFormat.PLAYER_VS)) {
             PlayerBasedTournament tournament = PlayerBasedTournament
@@ -63,7 +66,8 @@ public class TournamentService {
                     .owner(owner)
                     .build();
             Tournament newTournament = tournamentRepository.save(tournament);
-            tournamentRoleService.createDefaultTournamentRoles(newTournament);
+            List<TournamentRole> defaultTournamentRoles = tournamentRoleService.createDefaultTournamentRoles(newTournament);
+            pageService.createTournamentPages(defaultTournamentRoles, newTournament);
             return newTournament;
         }
 

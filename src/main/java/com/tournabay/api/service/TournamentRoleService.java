@@ -55,31 +55,21 @@ public class TournamentRoleService {
     }
 
     public TournamentRole createRole(String roleName, boolean isHidden, Tournament tournament) {
-        return tournamentRoleRepository.save(new TournamentRole(roleName, tournament, false, isHidden));
+        TournamentRole tournamentRole = tournamentRoleRepository.save(new TournamentRole(roleName, tournament, false, isHidden));
+        TournamentRole savedRole = save(tournamentRole);
+        List<Page> pages = tournament.getPages();
+        pageService.createRolePermissionForPage(tournamentRole, pages, null);
+        pageService.saveAll(pages);
+        return savedRole;
     }
 
     public TournamentRole createRole(String roleName, Long inheritRoleId, boolean isHidden, Tournament tournament) {
-        TournamentRole tournamentRole = createRole(roleName, isHidden, tournament);
-        TournamentRole savedRole = save(tournamentRole);
+        TournamentRole tournamentRole = tournamentRoleRepository.save(new TournamentRole(roleName, tournament, false, isHidden));
+        TournamentRole inheritRole = getRoleById(inheritRoleId, tournament);
         List<Page> pages = tournament.getPages();
-        for (Page page : pages) {
-            List<Permission> permissions = page.getPermissions();
-            for (Permission permission : permissions) {
-                if (permission instanceof RolePermission) {
-                    TournamentRole existingRole = ((RolePermission) permission).getTournamentRole();
-                    if (existingRole.getId().equals(inheritRoleId)) {
-                        RolePermission newPermission = new RolePermission();
-                        newPermission.setRead(permission.getRead());
-                        newPermission.setWrite(permission.getWrite());
-                        newPermission.setTournamentRole(savedRole);
-                        permissions.add(newPermission);
-                    }
-                }
-            }
-            permissionService.saveAll(permissions);
-        }
+        pageService.createRolePermissionForPage(tournamentRole, pages, inheritRole);
         pageService.saveAll(pages);
-        return savedRole;
+        return tournamentRole;
     }
 
     public List<TournamentRole> createDefaultTournamentRoles(Tournament tournament) {
