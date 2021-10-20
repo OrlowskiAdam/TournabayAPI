@@ -1,5 +1,6 @@
 package com.tournabay.api.controller;
 
+import com.tournabay.api.payload.License;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,8 @@ public class LicenseController {
 
     @GetMapping("/licencja/sort")
     public ResponseEntity<?> license() {
-        return ResponseEntity.ok(LocalDateTime.of(2023, 1, 1, 0, 0));
+        License license = new License();
+        license.setLdt(LocalDateTime.of(2023, 1, 1, 0, 0));
+        return ResponseEntity.ok(license);
     }
 }
