@@ -25,11 +25,11 @@ public class RoleService {
 
     @PostConstruct
     private void createDefaultRoles() {
-        Role role1 = roleRepository.findByName(RoleName.ROLE_USER).orElseGet(() -> {
+        roleRepository.findByName(RoleName.ROLE_USER).orElseGet(() -> {
             Role userRole = new Role(1L, RoleName.ROLE_USER);
             return roleRepository.save(userRole);
         });
-        Role role2 = roleRepository.findByName(RoleName.ROLE_ADMIN).orElseGet(() -> {
+        roleRepository.findByName(RoleName.ROLE_ADMIN).orElseGet(() -> {
             Role adminRole = new Role(2L, RoleName.ROLE_ADMIN);
             return roleRepository.save(adminRole);
         });

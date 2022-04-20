@@ -1,12 +1,14 @@
 package com.tournabay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tournabay.api.model.settings.TournamentSettings;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,9 +28,11 @@ public abstract class Tournament {
     protected String name;
 
     @NotNull
+    @CreationTimestamp
     protected LocalDateTime createdAt;
 
     @NotNull
+    @UpdateTimestamp
     protected LocalDateTime updatedAt;
 
     @NotNull
@@ -37,12 +41,10 @@ public abstract class Tournament {
     @NotNull
     protected LocalDateTime endDate;
 
-    @NotNull
     @JsonIgnore
     @OneToOne
     protected TournamentRole defaultRole;
 
-    @NotNull
     @JsonIgnore
     @OneToOne
     protected TournamentRole masterRole;
@@ -59,6 +61,9 @@ public abstract class Tournament {
     @Enumerated(EnumType.STRING)
     protected TeamFormat teamFormat;
 
+    @OneToOne(mappedBy = "tournament")
+    protected TournamentSettings tournamentSettings;
+
     @NotNull
     @ManyToOne
     protected User owner;
@@ -66,11 +71,9 @@ public abstract class Tournament {
     @OneToMany(mappedBy = "tournament")
     protected List<StaffMember> staffMembers = new ArrayList<>();
 
-    @NotEmpty
     @OneToMany(mappedBy = "tournament")
     protected List<TournamentRole> roles = new ArrayList<>();
 
-    @NotEmpty
     @OneToMany(mappedBy = "tournament")
     protected List<Page> pages;
 
@@ -80,11 +83,6 @@ public abstract class Tournament {
     @PrePersist
     private void onPrePersist() {
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    private void onPreUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 

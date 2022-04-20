@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -30,7 +31,7 @@ public class StaffMemberController {
     @Secured("ROLE_USER")
     // TODO: Security Check
     // TODO: Roles should be taken from tournament, not directly from database
-    public ResponseEntity<StaffMember> addStaffMember(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody AddStaffMemberRequest addStaffMemberRequest) {
+    public ResponseEntity<StaffMember> addStaffMember(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody @Valid AddStaffMemberRequest addStaffMemberRequest) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         List<TournamentRole> tournamentRoles = tournamentRoleService.getAllById(addStaffMemberRequest.getTournamentRoleIds());
         StaffMember staffMember = staffMemberService.addStaffMember(addStaffMemberRequest.getOsuId(), tournament, tournamentRoles);

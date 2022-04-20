@@ -6,7 +6,6 @@ import com.tournabay.api.model.*;
 import com.tournabay.api.payload.CreateTournamentRequest;
 import com.tournabay.api.repository.TournamentRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,6 +18,7 @@ public class TournamentService {
     private final ParticipantService participantService;
     private final TournamentRoleService tournamentRoleService;
     private final PageService pageService;
+    private final TournamentSettingsService tournamentSettingsService;
 
     public Tournament getTournamentById(Long id) {
         return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
@@ -66,6 +66,7 @@ public class TournamentService {
                     .owner(owner)
                     .build();
             Tournament newTournament = tournamentRepository.save(tournament);
+            tournamentSettingsService.createDefaultRegistrationSettings(tournament);
             List<TournamentRole> defaultTournamentRoles = tournamentRoleService.createDefaultTournamentRoles(newTournament);
             pageService.createTournamentPages(defaultTournamentRoles, newTournament);
             return newTournament;

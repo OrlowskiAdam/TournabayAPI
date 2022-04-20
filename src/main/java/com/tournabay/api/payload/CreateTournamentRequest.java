@@ -6,11 +6,15 @@ import com.tournabay.api.model.TeamFormat;
 import lombok.Getter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
 @ToString
 public class CreateTournamentRequest {
+    @NotNull(message = "Tournament name cannot be null!")
+    @NotEmpty(message = "Tournament name cannot be empty!")
     private String name;
     private ScoreType scoreType;
     private GameMode gameMode;
