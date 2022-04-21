@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class TournamentService {
     private final TournamentRoleService tournamentRoleService;
     private final PageService pageService;
     private final TournamentSettingsService tournamentSettingsService;
+    private final StaffMemberService staffMemberService;
 
     public Tournament getTournamentById(Long id) {
         return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
@@ -48,10 +51,17 @@ public class TournamentService {
                     .teamFormat(body.getTeamFormat())
                     .startDate(body.getStartDate())
                     .endDate(body.getEndDate())
+                    .staffMembers(new ArrayList<>())
+                    .roles(new ArrayList<>())
                     .owner(owner)
                     .build();
             Tournament newTournament = tournamentRepository.save(tournament);
             List<TournamentRole> defaultTournamentRoles = tournamentRoleService.createDefaultTournamentRoles(newTournament);
+            staffMemberService.addStaffMember(
+                    owner.getOsuId(),
+                    newTournament,
+                    defaultTournamentRoles.stream().filter(role -> role.getName().equals("Host")).collect(Collectors.toList())
+            );
             pageService.createTournamentPages(defaultTournamentRoles, newTournament);
             return newTournament;
         } else if (body.getTeamFormat().equals(TeamFormat.PLAYER_VS)) {
@@ -63,11 +73,14 @@ public class TournamentService {
                     .teamFormat(body.getTeamFormat())
                     .startDate(body.getStartDate())
                     .endDate(body.getEndDate())
+                    .staffMembers(new ArrayList<>())
+                    .roles(new ArrayList<>())
                     .owner(owner)
                     .build();
             Tournament newTournament = tournamentRepository.save(tournament);
             tournamentSettingsService.createDefaultRegistrationSettings(tournament);
             List<TournamentRole> defaultTournamentRoles = tournamentRoleService.createDefaultTournamentRoles(newTournament);
+            staffMemberService.addStaffMember(owner.getOsuId(), newTournament, defaultTournamentRoles.stream().filter(role -> role.getName().equals("Host")).collect(Collectors.toList()));
             pageService.createTournamentPages(defaultTournamentRoles, newTournament);
             return newTournament;
         }
