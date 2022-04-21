@@ -38,6 +38,15 @@ public class StaffMemberController {
         return ResponseEntity.status(201).body(staffMember);
     }
 
+    @DeleteMapping("/remove/{staffMemberId}/{tournamentId}")
+    @Secured("ROLE_USER")
+    public ResponseEntity<Void> removeStaffMember(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @PathVariable Long staffMemberId) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        StaffMember staffMember = staffMemberService.getStaffMemberById(staffMemberId, tournament);
+        staffMemberService.deleteStaffMember(staffMember, tournament);
+        return ResponseEntity.status(204).build();
+    }
+
     @PostMapping("/remove/{tournamentId}")
     @Secured("ROLE_USER")
     // TODO: Security check
