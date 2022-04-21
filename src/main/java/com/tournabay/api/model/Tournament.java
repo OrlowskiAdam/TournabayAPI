@@ -86,6 +86,11 @@ public abstract class Tournament {
         this.updatedAt = LocalDateTime.now();
     }
 
+    @PreUpdate
+    private void onPreUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public boolean containsParticipant(Participant participant) {
         return this.players.stream().anyMatch(o -> o.getUser().getId().equals(participant.getUser().getId()));
     }
