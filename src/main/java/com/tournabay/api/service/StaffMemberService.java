@@ -74,7 +74,11 @@ public class StaffMemberService {
         throw new BadRequestException("This user is already a staff member!");
     }
 
-    public StaffMember deleteStaffMember(StaffMember staffMember) {
+    public StaffMember deleteStaffMember(StaffMember staffMember, Tournament tournament) {
+        if (!tournament.containsStaffMember(staffMember)) throw new BadRequestException("This user is not a staff member!");
+        if (staffMember.getUser().getId().equals(tournament.getOwner().getId())) {
+            throw new BadRequestException("The owner of this tournament cannot be removed!");
+        }
         staffMemberRepository.delete(staffMember);
         return staffMember;
     }
