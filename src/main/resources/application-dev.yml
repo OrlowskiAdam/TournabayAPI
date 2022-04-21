@@ -73,3 +73,6 @@ app:
       - https://gottaaimfast.com/discord-oauth2-redirect
       - https://gafapi.herokuapp.com/oauth2/callback/discord
       - https://gafapi.herokuapp.com/oauth2/callback/osu
+server:
+  error:
+    include-message: always
