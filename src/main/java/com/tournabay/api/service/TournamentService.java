@@ -19,9 +19,9 @@ public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final ParticipantService participantService;
     private final TournamentRoleService tournamentRoleService;
-    private final PageService pageService;
     private final TournamentSettingsService tournamentSettingsService;
     private final StaffMemberService staffMemberService;
+    private final PermissionService permissionService;
 
     public Tournament getTournamentById(Long id) {
         return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
@@ -62,7 +62,7 @@ public class TournamentService {
                     newTournament,
                     defaultTournamentRoles.stream().filter(role -> role.getName().equals("Host")).collect(Collectors.toList())
             );
-            pageService.createTournamentPages(defaultTournamentRoles, newTournament);
+            permissionService.createDefaultPermission(newTournament, defaultTournamentRoles);
             return newTournament;
         } else if (body.getTeamFormat().equals(TeamFormat.PLAYER_VS)) {
             PlayerBasedTournament tournament = PlayerBasedTournament
@@ -81,7 +81,7 @@ public class TournamentService {
             tournamentSettingsService.createDefaultRegistrationSettings(tournament);
             List<TournamentRole> defaultTournamentRoles = tournamentRoleService.createDefaultTournamentRoles(newTournament);
             staffMemberService.addStaffMember(owner.getOsuId(), newTournament, defaultTournamentRoles.stream().filter(role -> role.getName().equals("Host")).collect(Collectors.toList()));
-            pageService.createTournamentPages(defaultTournamentRoles, newTournament);
+            permissionService.createDefaultPermission(newTournament, defaultTournamentRoles);
             return newTournament;
         }
 

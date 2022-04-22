@@ -75,10 +75,10 @@ public abstract class Tournament {
     protected List<TournamentRole> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "tournament")
-    protected List<Page> pages;
-
-    @OneToMany(mappedBy = "tournament")
     private List<Participant> players = new ArrayList<>();
+
+    @OneToOne(mappedBy = "tournament")
+    private Permission permission;
 
     @PrePersist
     private void onPrePersist() {
