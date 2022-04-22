@@ -65,4 +65,13 @@ public class TournamentRoleController {
         TournamentRole removedRole = tournamentRoleService.removeRole(tournamentRole, associatedStaffMembers, tournament);
         return ResponseEntity.ok(new TournamentRoleRemovalDto(removedRole, staffMembers));
     }
+
+    @PatchMapping("/save-position/{tournamentId}")
+    @Secured("ROLE_USER")
+    public ResponseEntity<List<TournamentRole>> saveRolesPosition(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody List<TournamentRole> tournamentRoles) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        tournamentRoles.forEach(tournamentRole -> tournamentRole.setTournament(tournament));
+        List<TournamentRole> savedTournamentRoles = tournamentRoleService.saveAll(tournamentRoles);
+        return ResponseEntity.ok(savedTournamentRoles);
+    }
 }
