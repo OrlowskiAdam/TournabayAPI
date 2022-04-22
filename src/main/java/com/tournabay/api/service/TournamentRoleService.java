@@ -23,6 +23,10 @@ public class TournamentRoleService {
         return tournamentRoleRepository.save(tournamentRole);
     }
 
+    public List<TournamentRole> saveAll(List<TournamentRole> tournamentRoles) {
+        return tournamentRoleRepository.saveAll(tournamentRoles);
+    }
+
     @Deprecated
     public List<TournamentRole> getAllById(Iterable<Long> ids) {
         return tournamentRoleRepository.findAllById(ids);
