@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,9 @@ public class TournamentService {
     private final PermissionService permissionService;
 
     public Tournament getTournamentById(Long id) {
-        return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
+        Tournament tournament = tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
+        tournament.getRoles().sort(Comparator.comparing(TournamentRole::getPosition));
+        return tournament;
     }
 
     public Tournament save(Tournament tournament) {
