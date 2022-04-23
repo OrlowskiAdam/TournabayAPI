@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @Data
 @SuperBuilder
 @NoArgsConstructor
+@DynamicUpdate
 public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

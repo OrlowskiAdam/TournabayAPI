@@ -10,7 +10,6 @@ import com.tournabay.api.repository.PlayerRegistrationSettingsRepository;
 import com.tournabay.api.repository.TournamentSettingsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +49,6 @@ public class TournamentSettingsService {
                 return tournamentSettings;
             }
         }
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
     }
 }

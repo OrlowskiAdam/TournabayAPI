@@ -23,11 +23,19 @@ public class StaffMemberService {
     }
 
     public StaffMember getStaffMemberById(Long memberId, Tournament tournament) {
-        List<StaffMember> staffMembers = tournament.getStaffMembers();
-        for (StaffMember staffMember : staffMembers) {
-            if (staffMember.getId().equals(memberId)) return staffMember;
-        }
-        throw new ResourceNotFoundException("Staff member not found for this tournament!");
+        return tournament
+                .getStaffMembers()
+                .stream()
+                .filter(staffMember -> staffMember.getId().equals(memberId))
+                .findFirst().orElseThrow(() -> new ResourceNotFoundException("Staff member not found"));
+    }
+
+    public StaffMember getStaffMemberByUser(User user, Tournament tournament) {
+        return tournament
+                .getStaffMembers()
+                .stream()
+                .filter(staffMember -> staffMember.getUser().getId().equals(user.getId()))
+                .findFirst().orElseThrow(() -> new ResourceNotFoundException("Staff member not found"));
     }
 
     public List<StaffMember> getStaffMembersById(List<Long> ids, Tournament tournament) {
@@ -44,7 +52,8 @@ public class StaffMemberService {
 
     public List<StaffMember> getStaffMembersByTournamentRole(TournamentRole tournamentRole, Tournament tournament) {
         List<TournamentRole> tournamentRoles = tournament.getRoles();
-        if (!tournamentRoles.contains(tournamentRole)) throw new BadRequestException("This role is not from this tournament");
+        if (!tournamentRoles.contains(tournamentRole))
+            throw new BadRequestException("This role is not from this tournament");
         List<StaffMember> staffMembers = tournament.getStaffMembers();
         List<StaffMember> foundStaffMembers = new ArrayList<>();
         for (StaffMember staffMember : staffMembers) {
@@ -75,7 +84,8 @@ public class StaffMemberService {
     }
 
     public StaffMember deleteStaffMember(StaffMember staffMember, Tournament tournament) {
-        if (!tournament.containsStaffMember(staffMember)) throw new BadRequestException("This user is not a staff member!");
+        if (!tournament.containsStaffMember(staffMember))
+            throw new BadRequestException("This user is not a staff member!");
         if (staffMember.getUser().getId().equals(tournament.getOwner().getId())) {
             throw new BadRequestException("The owner of this tournament cannot be removed!");
         }
@@ -112,7 +122,8 @@ public class StaffMemberService {
     }
 
     public List<StaffMember> disconnectTournamentRoleFromStaffMember(TournamentRole tournamentRole, List<StaffMember> associatedStaffMembers, Tournament tournament) {
-        if (tournamentRole.getId().equals(tournament.getDefaultRole().getId())) throw new BadRequestException("You cannot remove default role!");
+        if (tournamentRole.getId().equals(tournament.getDefaultRole().getId()))
+            throw new BadRequestException("You cannot remove default role!");
         for (StaffMember staffMember : associatedStaffMembers) {
             List<TournamentRole> roles = staffMember.getTournamentRoles();
             if (roles.size() == 1 && roles.get(0).getId().equals(tournamentRole.getId())) {

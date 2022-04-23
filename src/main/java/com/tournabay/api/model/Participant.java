@@ -32,7 +32,7 @@ public class Participant {
     private ParticipantStatus participantStatus;
 
     @JsonIgnore
-    @ManyToOne(targetEntity = Tournament.class)
+    @ManyToOne
     private Tournament tournament;
 
 }
