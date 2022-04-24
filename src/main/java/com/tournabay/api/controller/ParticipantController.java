@@ -2,7 +2,6 @@ package com.tournabay.api.controller;
 
 import com.tournabay.api.model.Participant;
 import com.tournabay.api.model.Tournament;
-import com.tournabay.api.payload.DeleteParticipantsRequest;
 import com.tournabay.api.payload.SetParticipantsStatusRequest;
 import com.tournabay.api.service.ParticipantService;
 import com.tournabay.api.service.TournamentService;
@@ -25,18 +24,19 @@ public class ParticipantController {
     // TODO: Security check
     public ResponseEntity<Participant> addParticipant(@PathVariable Long participantOsuId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        Participant participant = participantService.getParticipantByOsuId(participantOsuId);
+        Participant participant = participantService.getByOsuId(participantOsuId);
         Participant addedParticipant = tournamentService.addParticipant(tournament, participant);
         return ResponseEntity.ok(addedParticipant);
     }
 
     @Secured("ROLE_USER")
-    @PostMapping("/delete/{tournamentId}")
+    @PostMapping("/delete/{participantId}/{tournamentId}")
     // TODO: Security check
-    public ResponseEntity<List<Participant>> deleteParticipants(@PathVariable Long tournamentId, @RequestBody DeleteParticipantsRequest deleteParticipantsRequest) {
+    public ResponseEntity<Participant> deleteParticipant(@PathVariable Long participantId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        List<Participant> deletedParticipants = participantService.deleteAllByIds(deleteParticipantsRequest.getParticipantIds(), tournament);
-        return ResponseEntity.ok(deletedParticipants);
+        Participant participant = participantService.getById(participantId, tournament);
+        participantService.delete(participant, tournament);
+        return ResponseEntity.ok(participant);
     }
 
     @Secured("ROLE_USER")
