@@ -1,5 +1,7 @@
 package com.tournabay.api.service;
 
+import com.tournabay.api.exception.BadRequestException;
+import com.tournabay.api.exception.ResourceNotFoundException;
 import com.tournabay.api.model.Participant;
 import com.tournabay.api.model.ParticipantStatus;
 import com.tournabay.api.model.Tournament;
@@ -21,8 +23,17 @@ public class ParticipantService {
         return participantRepository.save(participant);
     }
 
-    public Participant getParticipantByOsuId(Long osuId) {
+    public Participant getByOsuId(Long osuId) {
         return participantRepository.findByUserOsuId(osuId).orElse(createParticipantFromOsuId(osuId));
+    }
+
+    public Participant getById(Long participantId, Tournament tournament) {
+        return tournament
+                .getParticipants()
+                .stream()
+                .filter(participant -> participant.getId().equals(participantId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Participant not found!"));
     }
 
     public List<Participant> getAllByIds(List<Long> ids, Tournament tournament) {
@@ -38,6 +49,16 @@ public class ParticipantService {
         List<Participant> participants = this.getAllByIds(ids, tournament);
         participantRepository.deleteAllById(ids);
         return participants;
+    }
+
+    public Participant delete(Participant participant, Tournament tournament) {
+        if (!tournament.containsParticipant(participant)) throw new BadRequestException("Participant doesn't exist in tournament");
+        participantRepository.delete(participant);
+        return participant;
+    }
+
+    public void deleteById(Long participantId) {
+        participantRepository.deleteById(participantId);
     }
 
     public Participant createParticipantFromOsuId(Long osuId) {
