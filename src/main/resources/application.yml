@@ -4,9 +4,9 @@ logging:
       pircbotx: OFF
 spring:
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/tournabay-prod
-    username: adam
-    password: adam
+    url: jdbc:${DB_TYPE}://${DB_IP}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     tomcat:
       test-while-idle: true
       time-between-eviction-runs-millis: 60000
@@ -31,16 +31,16 @@ spring:
       client:
         registration:
           osu:
-            clientId: 9260
-            clientSecret: 533kiWgX2e2LEaW8Ek8tlPCqUbe8zNsDLEyuUsOJ
-            redirectUri: "https://tournabay.com/oauth2/callback/{registrationId}"
+            clientId: ${OSU_OAUTH_CLIENT_ID}
+            clientSecret: ${OSU_OAUTH_CLIENT_SECRET}
+            redirectUri: ${OSU_OAUTH_REDIRECT_URI}
             authorizationGrantType: authorization_code
             scope:
               - identify
           discord:
-            clientId: 871122673407770676
-            clientSecret: C85lOdZCEUHIvSwnMTTbF60uMPkILfvI
-            redirectUri: "http://localhost:8081/o/callback/discord"
+            clientId: ${DISCORD_OAUTH_CLIENT_ID}
+            clientSecret: ${DISCORD_OAUTH_CLIENT_SECRET}
+            redirectUri: ${DISCORD_OAUTH_REDIRECT_URI}
             tokenRedirectUri: "http://localhost:8081/o/token"
             frontUri: "http://localhost:8080"
             authorizationGrantType: authorization_code
@@ -59,8 +59,8 @@ spring:
             usernameAttribute: id
 app:
   auth:
-    tokenSecret: q4zerkIg2f2OYALd70CuqOKKpjL6eLOf0RIjtrvK
-    tokenExpirationMsec: 864000000
+    tokenSecret: ${APP_AUTH_TOKEN_SECRET}
+    tokenExpirationMsec: ${APP_AUTH_TOKEN_EXPIRATION}
   oauth2:
     authorizedRedirectUris:
       - http://localhost:3000/oauth2/redirect
