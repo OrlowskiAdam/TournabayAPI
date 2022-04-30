@@ -2,9 +2,16 @@ package com.tournabay.api.controller;
 
 import com.tournabay.api.model.Participant;
 import com.tournabay.api.model.Tournament;
+import com.tournabay.api.model.User;
+import com.tournabay.api.payload.DeleteParticipantsRequest;
 import com.tournabay.api.payload.SetParticipantsStatusRequest;
+import com.tournabay.api.payload.UpdateParticipantRequest;
+import com.tournabay.api.security.CurrentUser;
+import com.tournabay.api.security.UserPrincipal;
 import com.tournabay.api.service.ParticipantService;
+import com.tournabay.api.service.PermissionService;
 import com.tournabay.api.service.TournamentService;
+import com.tournabay.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -16,36 +23,56 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/participant")
 public class ParticipantController {
+    private final UserService userService;
     private final TournamentService tournamentService;
     private final ParticipantService participantService;
+    private final PermissionService permissionService;
 
     @Secured("ROLE_USER")
-    @PostMapping("/add/{participantOsuId}/{tournamentId}")
+    @PostMapping("/add/{osuId}/{tournamentId}")
     // TODO: Security check
-    public ResponseEntity<Participant> addParticipant(@PathVariable Long participantOsuId, @PathVariable Long tournamentId) {
+    public ResponseEntity<Participant> addParticipant(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long osuId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        Participant participant = participantService.getByOsuId(participantOsuId);
+        User user = userService.getUserFromPrincipal(userPrincipal);
+        permissionService.hasAccess(
+                tournament,
+                user,
+                tournament.getPermission().getCanTournamentRoleManageParticipants(),
+                tournament.getPermission().getCanStaffMemberManageParticipants()
+        );
+        Participant participant = participantService.getByOsuId(osuId);
         Participant addedParticipant = tournamentService.addParticipant(tournament, participant);
         return ResponseEntity.ok(addedParticipant);
     }
 
     @Secured("ROLE_USER")
     @PostMapping("/delete/{participantId}/{tournamentId}")
-    // TODO: Security check
-    public ResponseEntity<Participant> deleteParticipant(@PathVariable Long participantId, @PathVariable Long tournamentId) {
+    public ResponseEntity<Void> deleteParticipant(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long participantId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        Participant participant = participantService.getById(participantId, tournament);
-        participantService.delete(participant, tournament);
-        return ResponseEntity.ok(participant);
+        User user = userService.getUserFromPrincipal(userPrincipal);
+        permissionService.hasAccess(
+                tournament,
+                user,
+                tournament.getPermission().getCanTournamentRoleManageParticipants(),
+                tournament.getPermission().getCanStaffMemberManageParticipants()
+        );
+        participantService.deleteById(participantId, tournament);
+        return ResponseEntity.ok().build();
     }
 
     @Secured("ROLE_USER")
-    // TODO: Security check
-    @PutMapping("/status/{tournamentId}")
-    public ResponseEntity<List<Participant>> setStatus(@PathVariable Long tournamentId, @RequestBody SetParticipantsStatusRequest setParticipantsStatusRequest) {
+    @PatchMapping("/update/{participantId}/{tournamentId}")
+    public ResponseEntity<Participant> updateParticipant(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long participantId, @PathVariable Long tournamentId, @RequestBody UpdateParticipantRequest body) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        List<Participant> participants = participantService.getAllByIds(setParticipantsStatusRequest.getParticipantIds(), tournament);
-        List<Participant> updatedParticipants = participantService.setParticipantsStatus(participants, setParticipantsStatusRequest.getStatus());
-        return ResponseEntity.ok(updatedParticipants);
+        User user = userService.getUserFromPrincipal(userPrincipal);
+        permissionService.hasAccess(
+                tournament,
+                user,
+                tournament.getPermission().getCanTournamentRoleManageParticipants(),
+                tournament.getPermission().getCanStaffMemberManageParticipants()
+        );
+        Participant participant = participantService.getById(participantId, tournament);
+        Participant updatedParticipant = participantService.updateParticipant(participant, body, tournament);
+        return ResponseEntity.ok(updatedParticipant);
     }
 }
