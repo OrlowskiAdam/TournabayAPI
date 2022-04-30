@@ -92,7 +92,11 @@ public abstract class Tournament {
     }
 
     public boolean containsParticipant(Participant participant) {
-        return this.participants.stream().anyMatch(o -> o.getUser().getId().equals(participant.getUser().getId()));
+        return this.participants.stream().anyMatch(o -> o.getId().equals(participant.getId()));
+    }
+
+    public boolean containsParticipantById(Long id) {
+        return this.participants.stream().anyMatch(o -> o.getId().equals(id));
     }
 
     public boolean containsStaffMember(StaffMember staffMember) {
