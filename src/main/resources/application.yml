@@ -1,7 +1,6 @@
-logging:
-  level:
-    org:
-      pircbotx: OFF
+server:
+  error:
+    include-message: always
 spring:
   datasource:
     url: jdbc:${DB_TYPE}://${DB_IP}:${DB_PORT}/${DB_NAME}
