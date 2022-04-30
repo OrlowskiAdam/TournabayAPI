@@ -31,13 +31,11 @@ public class PermissionController {
     public ResponseEntity<Permission> updateRolesPermission(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody PermissionPayload permissionPayload) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         User user = userService.getUserFromPrincipal(userPrincipal);
-        StaffMember staffMember = staffMemberService.getStaffMemberByUser(user, tournament);
         permissionService.hasAccess(
                 tournament,
                 user,
                 tournament.getPermission().getCanTournamentRoleManageRoles(),
-                tournament.getPermission().getCanStaffMemberManageRoles(),
-                staffMember
+                tournament.getPermission().getCanStaffMemberManageRoles()
         );
         Permission updatedPermission = permissionService.updateRolesPermission(tournament, permissionPayload.getTournamentRoles(), permissionPayload.getStaffMembers());
         return ResponseEntity.ok(updatedPermission);
@@ -48,13 +46,11 @@ public class PermissionController {
     public ResponseEntity<Permission> updateStaffPermission(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody PermissionPayload permissionPayload) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         User user = userService.getUserFromPrincipal(userPrincipal);
-        StaffMember staffMember = staffMemberService.getStaffMemberByUser(user, tournament);
         permissionService.hasAccess(
                 tournament,
                 user,
                 tournament.getPermission().getCanTournamentRoleManageRoles(),
-                tournament.getPermission().getCanStaffMemberManageRoles(),
-                staffMember
+                tournament.getPermission().getCanStaffMemberManageRoles()
         );
         Permission updatedPermission = permissionService.updateStaffPermission(tournament, permissionPayload.getTournamentRoles(), permissionPayload.getStaffMembers());
         return ResponseEntity.ok(updatedPermission);

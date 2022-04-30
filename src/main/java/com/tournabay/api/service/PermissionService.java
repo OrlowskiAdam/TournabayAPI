@@ -26,6 +26,8 @@ public class PermissionService {
                 .canStaffMemberManageStaffMembers(new ArrayList<>())
                 .canTournamentRoleManageAccess(tournamentRoleService.getRolesByName(Arrays.asList("Host", "Organizer"), tournamentRoles))
                 .canStaffMemberManageAccess(new ArrayList<>())
+                .canTournamentRoleManageParticipants(tournamentRoleService.getRolesByName(Arrays.asList("Host", "Organizer"), tournamentRoles))
+                .canStaffMemberManageParticipants(new ArrayList<>())
                 .build();
         return permissionRepository.save(permission);
     }
@@ -44,11 +46,16 @@ public class PermissionService {
         return permissionRepository.save(permission);
     }
 
-    public void hasAccess(Tournament tournament, User user, List<TournamentRole> permittedRoles, List<StaffMember> permittedStaffMembers, StaffMember staffMembers) {
-        if (tournament.getOwner().equals(user)) return;
-        if (permittedRoles.stream().noneMatch(tournamentRole -> staffMembers.getTournamentRoles().contains(tournamentRole)))
+    public void hasAccess(Tournament tournament, User user, List<TournamentRole> permittedRoles, List<StaffMember> permittedStaffMembers) {
+        if (tournament.getOwner().getId().equals(user.getId())) return;
+        StaffMember staffMember = tournament.getStaffMembers()
+                .stream()
+                .filter(s -> s.getUser().getId().equals(user.getId()))
+                .findFirst()
+                .orElseThrow(ForbiddenException::new);
+        if (permittedRoles.stream().noneMatch(tournamentRole -> staffMember.getTournamentRoles().contains(tournamentRole)))
             return;
-        if (permittedStaffMembers.stream().noneMatch(permittedStaffMember -> permittedStaffMember.equals(staffMembers)))
+        if (permittedStaffMembers.stream().noneMatch(permittedStaffMember -> permittedStaffMember.equals(staffMember)))
             return;
         throw new ForbiddenException();
     }
