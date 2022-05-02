@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.function.Predicate;
 
 @Entity
 @NoArgsConstructor
@@ -34,6 +32,9 @@ public class Participant {
     @NotNull
     @Enumerated(EnumType.STRING)
     private ParticipantStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private Seed seed;
 
     @Transient
     private String teamName;

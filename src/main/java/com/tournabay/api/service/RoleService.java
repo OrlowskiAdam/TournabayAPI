@@ -16,6 +16,11 @@ import java.util.Set;
 public class RoleService {
     private final RoleRepository roleRepository;
 
+    /**
+     * It returns a set of roles that contains the role with the name ROLE_USER
+     *
+     * @return A set of roles.
+     */
     public Set<Role> getBasicRoles() {
         Set<Role> roles = new HashSet<>();
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER).orElseThrow(() -> new AppException("Roles not set!"));
@@ -23,6 +28,9 @@ public class RoleService {
         return roles;
     }
 
+    /**
+     * If the role doesn't exist, create it
+     */
     @PostConstruct
     private void createDefaultRoles() {
         roleRepository.findByName(RoleName.ROLE_USER).orElseGet(() -> {

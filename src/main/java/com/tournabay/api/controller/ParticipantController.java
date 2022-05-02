@@ -41,7 +41,7 @@ public class ParticipantController {
                 tournament.getPermission().getCanStaffMemberManageParticipants()
         );
         Participant participant = participantService.getByOsuId(osuId);
-        Participant addedParticipant = tournamentService.addParticipant(tournament, participant);
+        Participant addedParticipant = participantService.addParticipant(tournament, participant);
         return ResponseEntity.ok(addedParticipant);
     }
 

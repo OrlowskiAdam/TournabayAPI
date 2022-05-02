@@ -17,6 +17,13 @@ public class PermissionService {
     private final PermissionRepository permissionRepository;
     private final TournamentRoleService tournamentRoleService;
 
+    /**
+     * Create a new permission object with default roles and staff members assigned.
+     *
+     * @param tournament The tournament that the permission is for
+     * @param tournamentRoles A list of all the tournament roles that exist in the tournament.
+     * @return A Permission object
+     */
     public Permission createDefaultPermission(Tournament tournament, List<TournamentRole> tournamentRoles) {
         Permission permission = Permission.builder()
                 .tournament(tournament)
@@ -32,6 +39,14 @@ public class PermissionService {
         return permissionRepository.save(permission);
     }
 
+    /**
+     * Update the roles that can manage roles for a tournament.
+     *
+     * @param tournament The tournament that the permission is for
+     * @param tournamentRoles A list of tournament roles that can manage roles
+     * @param staffMembers A list of staff members that can manage roles.
+     * @return A Permission object
+     */
     public Permission updateRolesPermission(Tournament tournament, List<TournamentRole> tournamentRoles, List<StaffMember> staffMembers) {
         Permission permission = permissionRepository.findByTournament(tournament).orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
         permission.setCanTournamentRoleManageRoles(tournamentRoles);
@@ -39,6 +54,15 @@ public class PermissionService {
         return permissionRepository.save(permission);
     }
 
+    /**
+     * Update the permission for a tournament to allow the given tournament roles to manage staff members, and allow the
+     * given staff members to manage staff members.
+     *
+     * @param tournament The tournament that the permission is for
+     * @param tournamentRoles A list of TournamentRoles that can manage staff members.
+     * @param staffMembers A list of staff members that can manage staff members.
+     * @return A Permission object
+     */
     public Permission updateStaffPermission(Tournament tournament, List<TournamentRole> tournamentRoles, List<StaffMember> staffMembers) {
         Permission permission = permissionRepository.findByTournament(tournament).orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
         permission.setCanTournamentRoleManageStaffMembers(tournamentRoles);
@@ -46,6 +70,16 @@ public class PermissionService {
         return permissionRepository.save(permission);
     }
 
+    /**
+     * If the user is the owner of the tournament, or if the user is a staff member of the tournament with a permitted
+     * role, or if the user is a staff member of the tournament that is in the list of permitted staff members, then the
+     * user has access.
+     *
+     * @param tournament The tournament that the user is trying to access
+     * @param user The user that is trying to access the resource
+     * @param permittedRoles A list of TournamentRoles that the user must have in order to have access to the resource.
+     * @param permittedStaffMembers A list of staff members that are allowed to access the resource.
+     */
     public void hasAccess(Tournament tournament, User user, List<TournamentRole> permittedRoles, List<StaffMember> permittedStaffMembers) {
         if (tournament.getOwner().getId().equals(user.getId())) return;
         StaffMember staffMember = tournament.getStaffMembers()

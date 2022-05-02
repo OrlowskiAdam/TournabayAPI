@@ -49,7 +49,7 @@ public class TournamentRoleController {
     public ResponseEntity<TournamentRole> updateTournamentRole(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody UpdateTournamentRoleRequest updateTournamentRoleRequest) {
         if (updateTournamentRoleRequest.getRoleName() == null || updateTournamentRoleRequest.getRoleName().equals("")) throw new BadRequestException("Please specify role name!");
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        TournamentRole tournamentRole = tournamentRoleService.getRoleById(updateTournamentRoleRequest.getRoleId(), tournament);
+        TournamentRole tournamentRole = tournamentRoleService.getById(updateTournamentRoleRequest.getRoleId(), tournament);
         TournamentRole updatedRole = tournamentRoleService.updateRole(tournamentRole, updateTournamentRoleRequest.getRoleName(), updateTournamentRoleRequest.getIsHidden());
         return ResponseEntity.ok(updatedRole);
     }
@@ -59,7 +59,7 @@ public class TournamentRoleController {
     @Transactional
     public ResponseEntity<TournamentRoleRemovalDto> removeTournamentRole(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long roleId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        TournamentRole tournamentRole = tournamentRoleService.getRoleById(roleId, tournament);
+        TournamentRole tournamentRole = tournamentRoleService.getById(roleId, tournament);
         List<StaffMember> associatedStaffMembers = staffMemberService.getStaffMembersByTournamentRole(tournamentRole, tournament);
         List<StaffMember> staffMembers = staffMemberService.disconnectTournamentRoleFromStaffMember(tournamentRole, associatedStaffMembers, tournament);
         TournamentRole removedRole = tournamentRoleService.removeRole(tournamentRole, associatedStaffMembers, tournament);

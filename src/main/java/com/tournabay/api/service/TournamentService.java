@@ -24,25 +24,36 @@ public class TournamentService {
     private final StaffMemberService staffMemberService;
     private final PermissionService permissionService;
 
+    /**
+     * Get the tournament with the given id, or throw an exception if it doesn't exist.
+     *
+     * @param id The id of the tournament you want to get.
+     * @return A tournament object with the roles sorted by position.
+     */
     public Tournament getTournamentById(Long id) {
         Tournament tournament = tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
         tournament.getRoles().sort(Comparator.comparing(TournamentRole::getPosition));
         return tournament;
     }
 
+    /**
+     * Save the tournament to the database.
+     *
+     * @param tournament The tournament object that is being saved.
+     * @return The tournament object is being returned.
+     */
     public Tournament save(Tournament tournament) {
         return tournamentRepository.save(tournament);
     }
 
-    public Participant addParticipant(Tournament tournament, Participant participant) {
-        if (!tournament.containsParticipant(participant)) {
-            participant.setTournament(tournament);
-            return participantService.save(participant);
-        }
-        throw new BadRequestException(participant.getUser().getUsername() + " is already a participant!");
-    }
-
     // TODO: Code clean-up
+    /**
+     * It creates a tournament from request body.
+     *
+     * @param body The request body, which is a CreateTournamentRequest object.
+     * @param owner The user who created the tournament
+     * @return A tournament object
+     */
     @Transactional
     public Tournament createTournament(CreateTournamentRequest body, User owner) {
         if (body.getTeamFormat().equals(TeamFormat.TEAM_VS)) {
