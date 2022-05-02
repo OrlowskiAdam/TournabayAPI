@@ -25,6 +25,12 @@ public class Team {
     @NotNull
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    private Seed seed;
+
+    @Enumerated(EnumType.STRING)
+    private TeamStatus status;
+
     @OneToMany
     private Set<Participant> participants = new HashSet<>();
 }
