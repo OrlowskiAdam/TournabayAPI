@@ -71,6 +71,36 @@ public class PermissionService {
     }
 
     /**
+     * Update the access permission of a tournament.
+     *
+     * @param tournament The tournament that the permission is for
+     * @param tournamentRoles A list of TournamentRoles that can manage access to the tournament.
+     * @param staffMembers A list of staff members that can manage access to the tournament.
+     * @return A Permission object
+     */
+    public Permission updateAccessPermission(Tournament tournament, List<TournamentRole> tournamentRoles, List<StaffMember> staffMembers) {
+        Permission permission = permissionRepository.findByTournament(tournament).orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
+        permission.setCanTournamentRoleManageAccess(tournamentRoles);
+        permission.setCanStaffMemberManageAccess(staffMembers);
+        return permissionRepository.save(permission);
+    }
+
+    /**
+     * Update the participants permission of the given tournament with the given tournament roles and staff members.
+     *
+     * @param tournament The tournament that the permission is for
+     * @param tournamentRoles A list of tournament roles that can manage participants.
+     * @param staffMembers A list of staff members that can manage participants.
+     * @return A Permission object
+     */
+    public Permission updateParticipantsPermission(Tournament tournament, List<TournamentRole> tournamentRoles, List<StaffMember> staffMembers) {
+        Permission permission = permissionRepository.findByTournament(tournament).orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
+        permission.setCanTournamentRoleManageParticipants(tournamentRoles);
+        permission.setCanStaffMemberManageParticipants(staffMembers);
+        return permissionRepository.save(permission);
+    }
+
+    /**
      * If the user is the owner of the tournament, or if the user is a staff member of the tournament with a permitted
      * role, or if the user is a staff member of the tournament that is in the list of permitted staff members, then the
      * user has access.

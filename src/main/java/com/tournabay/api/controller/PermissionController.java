@@ -55,4 +55,34 @@ public class PermissionController {
         Permission updatedPermission = permissionService.updateStaffPermission(tournament, permissionPayload.getTournamentRoles(), permissionPayload.getStaffMembers());
         return ResponseEntity.ok(updatedPermission);
     }
+
+    @PatchMapping("/access/{tournamentId}")
+    @Secured("ROLE_USER")
+    public ResponseEntity<Permission> updateAccessPermission(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody PermissionPayload permissionPayload) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        User user = userService.getUserFromPrincipal(userPrincipal);
+        permissionService.hasAccess(
+                tournament,
+                user,
+                tournament.getPermission().getCanTournamentRoleManageRoles(),
+                tournament.getPermission().getCanStaffMemberManageRoles()
+        );
+        Permission updatedPermission = permissionService.updateAccessPermission(tournament, permissionPayload.getTournamentRoles(), permissionPayload.getStaffMembers());
+        return ResponseEntity.ok(updatedPermission);
+    }
+
+    @PatchMapping("/participants/{tournamentId}")
+    @Secured("ROLE_USER")
+    public ResponseEntity<Permission> updateParticipantsPermission(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody PermissionPayload permissionPayload) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        User user = userService.getUserFromPrincipal(userPrincipal);
+        permissionService.hasAccess(
+                tournament,
+                user,
+                tournament.getPermission().getCanTournamentRoleManageRoles(),
+                tournament.getPermission().getCanStaffMemberManageRoles()
+        );
+        Permission updatedPermission = permissionService.updateParticipantsPermission(tournament, permissionPayload.getTournamentRoles(), permissionPayload.getStaffMembers());
+        return ResponseEntity.ok(updatedPermission);
+    }
 }

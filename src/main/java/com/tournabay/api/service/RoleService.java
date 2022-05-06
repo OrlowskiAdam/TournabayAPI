@@ -29,6 +29,16 @@ public class RoleService {
     }
 
     /**
+     * If the role exists, return it, otherwise throw an exception.
+     *
+     * @param roleName The name of the role you want to get.
+     * @return A Role object
+     */
+    public Role getByName(RoleName roleName) {
+        return roleRepository.findByName(roleName).orElseThrow(() -> new AppException("Role not set!"));
+    }
+
+    /**
      * If the role doesn't exist, create it
      */
     @PostConstruct
