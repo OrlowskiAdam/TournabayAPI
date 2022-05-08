@@ -18,6 +18,7 @@ prepare:
 #    - sudo usermod -aG docker $USER
     - sudo apt install -y openjdk-8-jdk; java -version
     - sudo apt install -y maven; mvn -version
+    - echo $DB_IP
 
 prepare_database:
   stage: prepare_database
