@@ -58,8 +58,8 @@ spring:
             usernameAttribute: id
 app:
   auth:
-    tokenSecret: ${APP_AUTH_TOKEN_SECRET}
-    tokenExpirationMsec: ${APP_AUTH_TOKEN_EXPIRATION}
+    tokenSecret: q4zerkIg2f2OYALd70CuqOKKpjL6eLOf0RIjtrvK
+    tokenExpirationMsec: 864000000
   oauth2:
     authorizedRedirectUris:
       - http://localhost:3000/oauth2/redirect
