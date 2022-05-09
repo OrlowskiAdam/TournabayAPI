@@ -20,9 +20,9 @@ public class TournamentService {
     private final TournamentRepository tournamentRepository;
     private final ParticipantService participantService;
     private final TournamentRoleService tournamentRoleService;
-    private final TournamentSettingsService tournamentSettingsService;
     private final StaffMemberService staffMemberService;
     private final PermissionService permissionService;
+    private final SettingsService settingsService;
 
     /**
      * Get the tournament with the given id, or throw an exception if it doesn't exist.
@@ -77,6 +77,7 @@ public class TournamentService {
                     defaultTournamentRoles.stream().filter(role -> role.getName().equals("Host")).collect(Collectors.toList())
             );
             permissionService.createDefaultPermission(newTournament, defaultTournamentRoles);
+            settingsService.createDefaultSettings(newTournament);
             return newTournament;
         } else if (body.getTeamFormat().equals(TeamFormat.PLAYER_VS)) {
             PlayerBasedTournament tournament = PlayerBasedTournament
@@ -92,7 +93,7 @@ public class TournamentService {
                     .owner(owner)
                     .build();
             Tournament newTournament = tournamentRepository.save(tournament);
-            tournamentSettingsService.createDefaultRegistrationSettings(tournament);
+            settingsService.createDefaultSettings(tournament);
             List<TournamentRole> defaultTournamentRoles = tournamentRoleService.createDefaultTournamentRoles(newTournament);
             staffMemberService.addStaffMember(owner.getOsuId(), newTournament, defaultTournamentRoles.stream().filter(role -> role.getName().equals("Host")).collect(Collectors.toList()));
             permissionService.createDefaultPermission(newTournament, defaultTournamentRoles);
