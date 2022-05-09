@@ -14,9 +14,4 @@ public class TournabayApplication {
         SpringApplication.run(TournabayApplication.class, args);
     }
 
-    // return number between 50 and 100
-    public static int getRandomNumber() {
-        return (int) (Math.random() * 50) + 50;
-    }
-
 }
