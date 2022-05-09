@@ -36,6 +36,7 @@ deploy_production:
   tags:
     - deployment
   script:
+    - printenv
     - BUILD=$(pwd)
     - mvn package
     - docker stop nginx || true
