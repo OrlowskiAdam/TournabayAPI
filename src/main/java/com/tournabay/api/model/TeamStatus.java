@@ -4,5 +4,6 @@ public enum TeamStatus {
     ACTIVE,
     PENDING,
     REJECTED,
-    OUT
+    OUT,
+    UNKNOWN
 }
