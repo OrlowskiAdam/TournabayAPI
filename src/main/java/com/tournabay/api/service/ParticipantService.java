@@ -3,7 +3,6 @@ package com.tournabay.api.service;
 import com.tournabay.api.exception.BadRequestException;
 import com.tournabay.api.exception.ResourceNotFoundException;
 import com.tournabay.api.model.*;
-import com.tournabay.api.payload.UpdateParticipantRequest;
 import com.tournabay.api.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ import java.util.stream.Collectors;
 public class ParticipantService {
     private final ParticipantRepository participantRepository;
     private final UserService userService;
-    private final TeamService teamService;
 
     /**
      * Save the participant to the database.
@@ -60,19 +58,21 @@ public class ParticipantService {
     }
 
     /**
-     * Get all participants from a tournament that have an id in the given list of ids.
+     * Get all participants from a tournament that have an id in the given list of participantIds.
      *
-     * The function is a bit more complicated than that, but it's still pretty simple
+     * If the number of the participantIds is not equal to the number of participants in the tournament, we throw an exception.
      *
-     * @param ids The list of ids of the participants to be returned
+     * @param participantIds The list of participantIds of the participants to be returned
      * @param tournament The tournament to get the participants from.
-     * @return A list of participants that are in the tournament and have an id that is in the list of ids.
+     * @return A list of participants that are in the tournament and have an id that is in the list of participantIds.
      */
-    public List<Participant> getAllByIds(List<Long> ids, Tournament tournament) {
-        return tournament.getParticipants()
+    public List<Participant> getAllByIds(List<Long> participantIds, Tournament tournament) {
+        List<Participant> participants = tournament.getParticipants()
                 .stream()
-                .filter(participant -> ids.contains(participant.getId()))
+                .filter(participant -> participantIds.contains(participant.getId()))
                 .collect(Collectors.toList());
+        if (participants.size() != participantIds.size()) throw new BadRequestException("One or more participants not found!");
+        return participants;
     }
 
     /**
@@ -150,27 +150,28 @@ public class ParticipantService {
     }
 
     // TODO: Docs
-    public Participant updateParticipant(Participant participant, UpdateParticipantRequest body, Tournament tournament) {
-        if (tournament instanceof TeamBasedTournament teamBasedTournament) {
-            // TODO: Limit team size when settings are done for TeamBasedTournaments
-            // Detach the participant from the team if he's in any
-            teamBasedTournament.getTeams()
-                    .stream()
-                    .filter(team -> team.getParticipants().contains(participant))
-                    .findFirst()
-                    .ifPresent(team -> {
-                        team.getParticipants().remove(participant);
-                        teamService.save(team);
-                    });
-            Team team = teamService.findById(body.getTeamId());
-            team.getParticipants().add(participant);
-            teamService.save(team);
-            participant.setDiscordId(body.getDiscordId());
-            return participantRepository.save(participant);
-        } else if (tournament instanceof PlayerBasedTournament playerBasedTournament) {
-            participant.setDiscordId(body.getDiscordId());
-            return participantRepository.save(participant);
-        }
-        throw new BadRequestException("Tournament type not supported");
-    }
+//    public Participant updateParticipant(Participant participant, UpdateParticipantRequest body, Tournament tournament) {
+//        if (tournament instanceof TeamBasedTournament) {
+//            TeamBasedTournament teamBasedTournament = (TeamBasedTournament) tournament;
+//            // TODO: Limit team size when settings are done for TeamBasedTournaments
+//            // Detach the participant from the team if he's in any
+//            teamBasedTournament.getTeams()
+//                    .stream()
+//                    .filter(team -> team.getParticipants().contains(participant))
+//                    .findFirst()
+//                    .ifPresent(team -> {
+//                        team.getParticipants().remove(participant);
+//                        teamService.save(team);
+//                    });
+//            Team team = teamService.findById(body.getTeamId());
+//            team.getParticipants().add(participant);
+//            teamService.save(team);
+//            participant.setDiscordId(body.getDiscordId());
+//            return participantRepository.save(participant);
+//        } else if (tournament instanceof PlayerBasedTournament playerBasedTournament) {
+//            participant.setDiscordId(body.getDiscordId());
+//            return participantRepository.save(participant);
+//        }
+//        throw new BadRequestException("Tournament type not supported");
+//    }
 }
