@@ -54,4 +54,20 @@ public class Permission {
 
     @OneToMany
     private List<StaffMember> canStaffMemberManageParticipants;
+
+    // TEAMS
+
+    @OneToMany
+    private List<TournamentRole> canTournamentRoleManageTeams;
+
+    @OneToMany
+    private List<StaffMember> canStaffMemberManageTeams;
+
+    // SETTINGS
+
+    @OneToMany
+    private List<TournamentRole> canTournamentRoleManageSettings;
+
+    @OneToMany
+    private List<StaffMember> canStaffMemberManageSettings;
 }
