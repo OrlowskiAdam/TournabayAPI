@@ -60,19 +60,20 @@ public class ParticipantController {
         return ResponseEntity.ok().build();
     }
 
-    @Secured("ROLE_USER")
-    @PatchMapping("/update/{participantId}/{tournamentId}")
-    public ResponseEntity<Participant> updateParticipant(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long participantId, @PathVariable Long tournamentId, @RequestBody UpdateParticipantRequest body) {
-        Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        User user = userService.getUserFromPrincipal(userPrincipal);
-        permissionService.hasAccess(
-                tournament,
-                user,
-                tournament.getPermission().getCanTournamentRoleManageParticipants(),
-                tournament.getPermission().getCanStaffMemberManageParticipants()
-        );
-        Participant participant = participantService.getById(participantId, tournament);
-        Participant updatedParticipant = participantService.updateParticipant(participant, body, tournament);
-        return ResponseEntity.ok(updatedParticipant);
-    }
+    // TODO: Update participant endpoint
+//    @Secured("ROLE_USER")
+//    @PatchMapping("/update/{participantId}/{tournamentId}")
+//    public ResponseEntity<Participant> updateParticipant(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long participantId, @PathVariable Long tournamentId, @RequestBody UpdateParticipantRequest body) {
+//        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+//        User user = userService.getUserFromPrincipal(userPrincipal);
+//        permissionService.hasAccess(
+//                tournament,
+//                user,
+//                tournament.getPermission().getCanTournamentRoleManageParticipants(),
+//                tournament.getPermission().getCanStaffMemberManageParticipants()
+//        );
+//        Participant participant = participantService.getById(participantId, tournament);
+//        Participant updatedParticipant = participantService.updateParticipant(participant, body, tournament);
+//        return ResponseEntity.ok(updatedParticipant);
+//    }
 }
