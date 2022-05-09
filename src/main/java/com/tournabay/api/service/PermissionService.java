@@ -35,6 +35,8 @@ public class PermissionService {
                 .canStaffMemberManageAccess(new ArrayList<>())
                 .canTournamentRoleManageParticipants(tournamentRoleService.getRolesByName(Arrays.asList("Host", "Organizer"), tournamentRoles))
                 .canStaffMemberManageParticipants(new ArrayList<>())
+                .canTournamentRoleManageTeams(tournamentRoleService.getRolesByName(Arrays.asList("Host", "Organizer"), tournamentRoles))
+                .canStaffMemberManageTeams(new ArrayList<>())
                 .build();
         return permissionRepository.save(permission);
     }
@@ -97,6 +99,21 @@ public class PermissionService {
         Permission permission = permissionRepository.findByTournament(tournament).orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
         permission.setCanTournamentRoleManageParticipants(tournamentRoles);
         permission.setCanStaffMemberManageParticipants(staffMembers);
+        return permissionRepository.save(permission);
+    }
+
+    /**
+     * Update the settings permission of the given tournament with the given tournament roles and staff members.
+     *
+     * @param tournament The tournament that the permission is for
+     * @param tournamentRoles A list of tournament roles that can manage settings.
+     * @param staffMembers A list of staff members that can manage the tournament settings.
+     * @return A Permission object
+     */
+    public Permission updateParticipantsSettings(Tournament tournament, List<TournamentRole> tournamentRoles, List<StaffMember> staffMembers) {
+        Permission permission = permissionRepository.findByTournament(tournament).orElseThrow(() -> new ResourceNotFoundException("Permission not found"));
+        permission.setCanTournamentRoleManageSettings(tournamentRoles);
+        permission.setCanStaffMemberManageSettings(staffMembers);
         return permissionRepository.save(permission);
     }
 
