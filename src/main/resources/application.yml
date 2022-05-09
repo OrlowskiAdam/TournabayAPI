@@ -3,9 +3,9 @@ server:
     include-message: always
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_IP}:${DB_PORT}/${DB_NAME}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://127.0.0.1:5432/tournabay-prod
+    username: adam
+    password: adam
     tomcat:
       test-while-idle: true
       time-between-eviction-runs-millis: 60000
@@ -30,9 +30,9 @@ spring:
       client:
         registration:
           osu:
-            clientId: ${OSU_OAUTH_CLIENT_ID}
-            clientSecret: ${OSU_OAUTH_CLIENT_SECRET}
-            redirectUri: ${OSU_OAUTH_REDIRECT_URI}
+            clientId: 9260
+            clientSecret: 533kiWgX2e2LEaW8Ek8tlPCqUbe8zNsDLEyuUsOJ
+            redirectUri: "https://tournabay.com/oauth2/callback/{registrationId}"
             authorizationGrantType: authorization_code
             scope:
               - identify
