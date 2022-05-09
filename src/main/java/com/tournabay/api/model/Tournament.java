@@ -1,7 +1,8 @@
 package com.tournabay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.tournabay.api.model.settings.TournamentSettings;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -61,23 +62,27 @@ public abstract class Tournament {
     @Enumerated(EnumType.STRING)
     protected TeamFormat teamFormat;
 
-    @OneToOne(mappedBy = "tournament")
-    protected TournamentSettings tournamentSettings;
+    @OneToOne(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIdentityInfo(
+            generator = ObjectIdGenerators.PropertyGenerator.class,
+            property = "id"
+    )
+    protected Settings settings;
 
     @NotNull
     @ManyToOne
     protected User owner;
 
-    @OneToMany(mappedBy = "tournament")
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
     protected List<StaffMember> staffMembers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tournament")
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
     protected List<TournamentRole> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tournament")
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
     private List<Participant> participants = new ArrayList<>();
 
-    @OneToOne(mappedBy = "tournament")
+    @OneToOne(mappedBy = "tournament", cascade = CascadeType.ALL)
     private Permission permission;
 
     @PrePersist
