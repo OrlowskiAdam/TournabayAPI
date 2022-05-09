@@ -1,6 +1,7 @@
 package com.tournabay.api.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,29 +37,18 @@ public class Participant {
     @Enumerated(EnumType.STRING)
     private Seed seed;
 
-    @Transient
-    private String teamName;
+    @JsonIdentityInfo(
+            generator = ObjectIdGenerators.PropertyGenerator.class,
+            property = "id"
+    )
+    @OneToOne
+    private Team team;
 
-    @Transient
-    private Long teamId;
-
-    @JsonIgnore
+    @JsonIdentityInfo(
+            generator = ObjectIdGenerators.PropertyGenerator.class,
+            property = "id"
+    )
     @ManyToOne
     private Tournament tournament;
-
-    @PostLoad
-    public void postLoad() {
-        if (this.tournament instanceof TeamBasedTournament teamBasedTournament) {
-            teamBasedTournament
-                    .getTeams()
-                    .stream()
-                    .filter(team -> team.getParticipants().stream().anyMatch(participant -> participant.getId().equals(this.id)))
-                    .findFirst()
-                    .ifPresent(team -> {
-                        this.teamName = team.getName();
-                        this.teamId = team.getId();
-                    });
-        }
-    }
 
 }
