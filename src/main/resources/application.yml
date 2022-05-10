@@ -23,7 +23,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
   security:
     oauth2:
