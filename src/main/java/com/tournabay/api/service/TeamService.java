@@ -36,22 +36,46 @@ public class TeamService {
         throw new BadRequestException("Invalid tournament type!");
     }
 
-    public Team create(String name, Seed seed, TeamStatus teamStatus, List<Long> participantIds, Tournament tournament) {
+
+    /**
+     * Creates a team for a team based tournament
+     *
+     * @param name The name of the team
+     * @param participantIds A list of participant IDs that will be added to the team.
+     * @param seed The seed of the team.
+     * @param teamStatus The status of the team.
+     * @param tournament The tournament that the team is being created for.
+     * @return A Team object
+     */
+    public Team createTeam(String name, List<Long> participantIds, Seed seed, TeamStatus teamStatus, Tournament tournament) {
         if (tournament instanceof TeamBasedTournament) {
             TeamBasedTournament teamBasedTournament = (TeamBasedTournament) tournament;
+            // Check if the team name is unique
+            if (checkForUniqueTeamName(name, teamBasedTournament))
+                throw new BadRequestException("Team name already exists!");
+            // Check if the team size is valid
             Settings settings = teamBasedTournament.getSettings();
             Integer maxTeamSize = settings.getMaxTeamSize();
-            if (participantIds.size() > maxTeamSize) {
-                throw new BadRequestException("Team size must be between cannot be greater than " + maxTeamSize);
-            }
+            if (participantIds.size() > maxTeamSize)
+                throw new BadRequestException("Team size cannot be greater than " + maxTeamSize);
+            // Check if the participants are not in other teams
             List<Participant> participants = participantService.getAllByIds(participantIds, tournament);
+            if (checkForDuplicatedParticipants(participants, teamBasedTournament))
+                throw new BadRequestException("One or more participant is already in other team!");
+            // First participant in the list is the captain
+            Participant captain = participants.size() > 0 ? participants.get(0) : null;
             Team team = Team.builder()
                     .name(name)
                     .seed(seed)
                     .status(teamStatus)
+                    .captain(captain)
                     .participants(new HashSet<>(participants))
+                    .tournament(teamBasedTournament)
                     .build();
-            return teamRepository.save(team);
+            Team newTeam = teamRepository.save(team);
+            participants.forEach(participant -> participant.setTeam(newTeam));
+            participantService.saveAll(participants);
+            return newTeam;
         }
         throw new BadRequestException("Invalid tournament type!");
     }
@@ -66,7 +90,14 @@ public class TeamService {
         return teamRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Team not found!"));
     }
 
-    private boolean checkForDuplicateParticipants(List<Participant> participants, TeamBasedTournament tournament) {
+    /**
+     * Check if any of the participants in the list of participants are already in the tournament's team
+     *
+     * @param participants The list of participants that are being added to the team.
+     * @param tournament The tournament to check for duplicate participants in.
+     * @return A boolean value.
+     */
+    private boolean checkForDuplicatedParticipants(List<Participant> participants, TeamBasedTournament tournament) {
         return tournament.getTeams()
                 .stream()
                 .anyMatch(team -> team.getParticipants()
@@ -75,5 +106,18 @@ public class TeamService {
                                 .stream()
                                 .anyMatch(participant1 -> participant1.getId().equals(participant.getId())
                                 )));
+    }
+
+    /**
+     * Check if any of the teams in the tournament have the same name as the one passed in.
+     *
+     * @param name The name of the team to be created
+     * @param tournament The tournament that the team is being added to.
+     * @return A boolean value.
+     */
+    private boolean checkForUniqueTeamName(String name, TeamBasedTournament tournament) {
+        return tournament.getTeams()
+                .stream()
+                .anyMatch(team -> team.getName().equals(name));
     }
 }
