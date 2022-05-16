@@ -28,13 +28,23 @@ public class ParticipantService {
     }
 
     /**
-     * If a participant exists with the given osuId, return it, otherwise create a new participant with the given osuId.
+     * Get the participant with the given osuId from the given tournament, or create a new one if it doesn't exist.
      *
-     * @param osuId The osuId of the user you want to get the participant for.
+     * The first thing we do is get the participants from the tournament. Then we filter the
+     * participants by the given osuId. Then we use findFirst() method to get the first participant that
+     * matches the filter. If there is no participant that matches the filter, we create a new one
+     *
+     * @param osuId The osuId of the user you want to get the participant of.
+     * @param tournament The tournament that the participant is in
      * @return A participant object
      */
-    public Participant getByOsuId(Long osuId) {
-        return participantRepository.findByUserOsuId(osuId).orElse(createParticipantFromOsuId(osuId));
+    public Participant getByOsuId(Long osuId, Tournament tournament) {
+        return tournament
+                .getParticipants()
+                .stream()
+                .filter(participant -> participant.getUser().getOsuId().equals(osuId))
+                .findFirst()
+                .orElse(createParticipantFromOsuId(osuId, tournament));
     }
 
     /**
@@ -113,12 +123,16 @@ public class ParticipantService {
     }
 
     /**
-     * Create a new participant from an osuId.
+     * Create a participant from an osuId, and add the user to the database if they don't exist.
      *
-     * @param osuId The osu! user id of the user you want to add.
+     * The first thing we do is call the `userService.addUserByOsuId(osuId)` function. This function will return a user
+     * object if the user exists in the database, or create a new user and return that
+     *
+     * @param osuId The osu! id of the user you want to add.
+     * @param tournament The tournament that the participant is being added to.
      * @return A participant object
      */
-    public Participant createParticipantFromOsuId(Long osuId) {
+    public Participant createParticipantFromOsuId(Long osuId, Tournament tournament) {
         User user = userService.addUserByOsuId(osuId);
         return Participant.builder()
                 .user(user)
@@ -126,6 +140,7 @@ public class ParticipantService {
                 .seed(Seed.UNKNOWN)
                 .joinedAt(LocalDateTime.now())
                 .status(ParticipantStatus.ACCEPTED)
+                .tournament(tournament)
                 .build();
     }
 

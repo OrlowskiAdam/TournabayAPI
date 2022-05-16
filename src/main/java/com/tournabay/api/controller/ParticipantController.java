@@ -40,7 +40,7 @@ public class ParticipantController {
                 tournament.getPermission().getCanTournamentRoleManageParticipants(),
                 tournament.getPermission().getCanStaffMemberManageParticipants()
         );
-        Participant participant = participantService.getByOsuId(osuId);
+        Participant participant = participantService.getByOsuId(osuId, tournament);
         Participant addedParticipant = participantService.addParticipant(tournament, participant);
         return ResponseEntity.ok(addedParticipant);
     }
