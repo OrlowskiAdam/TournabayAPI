@@ -30,7 +30,6 @@ public class ParticipantController {
 
     @Secured("ROLE_USER")
     @PostMapping("/add/{osuId}/{tournamentId}")
-    // TODO: Security check
     public ResponseEntity<Participant> addParticipant(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long osuId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         User user = userService.getUserFromPrincipal(userPrincipal);
