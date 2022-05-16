@@ -28,6 +28,16 @@ public class ParticipantService {
     }
 
     /**
+     * Save all the participants in the list to the database.
+     *
+     * @param participants The list of participants to be saved.
+     * @return A list of participants
+     */
+    public List<Participant> saveAll(List<Participant> participants) {
+        return participantRepository.saveAll(participants);
+    }
+
+    /**
      * Get the participant with the given osuId from the given tournament, or create a new one if it doesn't exist.
      *
      * The first thing we do is get the participants from the tournament. Then we filter the
@@ -119,6 +129,11 @@ public class ParticipantService {
      */
     public void deleteById(Long participantId, Tournament tournament) {
         if (!tournament.containsParticipantById(participantId)) throw new BadRequestException("Participant doesn't exist in tournament");
+        if (tournament instanceof TeamBasedTournament) {
+            TeamBasedTournament teamBasedTournament = (TeamBasedTournament) tournament;
+            boolean isCaptain = teamBasedTournament.getTeams().stream().anyMatch(team -> team.getCaptain().getId().equals(participantId));
+            if (isCaptain) throw new BadRequestException("Participant is captain of a team. Cannot be deleted!");
+        }
         participantRepository.deleteById(participantId);
     }
 
