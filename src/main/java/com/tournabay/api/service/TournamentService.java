@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TournamentService {
     private final TournamentRepository tournamentRepository;
-    private final ParticipantService participantService;
     private final TournamentRoleService tournamentRoleService;
     private final StaffMemberService staffMemberService;
     private final PermissionService permissionService;
