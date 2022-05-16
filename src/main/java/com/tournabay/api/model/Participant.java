@@ -37,9 +37,9 @@ public class Participant {
 
     @JsonIdentityInfo(
             generator = ObjectIdGenerators.PropertyGenerator.class,
-            property = "id"
+            property = "name"
     )
-    @OneToOne
+    @ManyToOne
     private Team team;
 
     @JsonIdentityInfo(
