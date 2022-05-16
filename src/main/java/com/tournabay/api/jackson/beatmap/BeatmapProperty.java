@@ -2,8 +2,11 @@ package com.tournabay.api.jackson.beatmap;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class BeatmapProperty {
     @JsonProperty("beatmapset_id")
     private Long mapsetId;

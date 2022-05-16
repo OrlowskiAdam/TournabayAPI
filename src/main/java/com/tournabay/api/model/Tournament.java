@@ -1,8 +1,9 @@
 package com.tournabay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
@@ -17,7 +18,8 @@ import java.util.List;
 @Entity
 @SuperBuilder
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @DynamicUpdate
 public abstract class Tournament {
 
@@ -75,7 +77,7 @@ public abstract class Tournament {
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
     protected List<TournamentRole> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participant> participants = new ArrayList<>();
 
     @OneToOne(mappedBy = "tournament", cascade = CascadeType.ALL)

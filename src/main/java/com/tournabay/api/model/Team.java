@@ -1,11 +1,9 @@
 package com.tournabay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,7 +13,8 @@ import java.util.*;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 public class Team {
 
     @Id
@@ -31,12 +30,11 @@ public class Team {
     @Enumerated(EnumType.STRING)
     private TeamStatus status;
 
-    @JsonIdentityInfo(
-            generator = ObjectIdGenerators.PropertyGenerator.class,
-            property = "id"
-    )
-    @OneToMany
+    @OneToMany(mappedBy = "team")
     private Set<Participant> participants = new HashSet<>();
+
+    @OneToOne
+    private Participant captain;
 
     @JsonIdentityInfo(
             generator = ObjectIdGenerators.PropertyGenerator.class,

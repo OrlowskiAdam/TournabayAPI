@@ -2,8 +2,11 @@ package com.tournabay.api.jackson.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class UserProperty {
     @JsonProperty("user_id")
     private Long osuId;
