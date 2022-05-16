@@ -1,9 +1,7 @@
 package com.tournabay.api.controller;
 
 import com.tournabay.api.exception.BadRequestException;
-import com.tournabay.api.exception.ResourceNotFoundException;
 import com.tournabay.api.model.User;
-import com.tournabay.api.repository.UserRepository;
 import com.tournabay.api.security.CurrentUser;
 import com.tournabay.api.security.UserPrincipal;
 import com.tournabay.api.service.UserService;
