@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Getter
@@ -46,4 +45,11 @@ public class TournamentRole {
     @NotNull
     @ManyToOne
     private Tournament tournament;
+
+    @PreRemove
+    private void preRemove() {
+        if (tournament != null) {
+            tournament.getRoles().remove(this);
+        }
+    }
 }
