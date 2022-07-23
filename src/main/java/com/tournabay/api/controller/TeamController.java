@@ -25,14 +25,14 @@ public class TeamController {
 
     /**
      * Create a team for a tournament, if the user has permission to do so.
-     *
+     * <p>
      * The first thing we do is get the tournament from the database. Then we get the user from the user principal. Then we
      * check if the user has permission to create a team. Then we create the team
      *
-     * @param userPrincipal The user who is making the request.
-     * @param tournamentId The id of the tournament the team is being created for
+     * @param userPrincipal     The user who is making the request.
+     * @param tournamentId      The id of the tournament the team is being created for
      * @param createTeamRequest This is the request body that is sent to the server. It contains the name of the team, the
-     * participant ids, the seed, the status, and the tournament.
+     *                          participant ids, the seed, the status, and the tournament.
      * @return A ResponseEntity with a body of type Team.
      */
     @PostMapping("/create/{tournamentId}")
@@ -48,11 +48,52 @@ public class TeamController {
         );
         Team team = teamService.createTeam(
                 createTeamRequest.getName(),
+                createTeamRequest.getCaptainId(),
                 createTeamRequest.getParticipantIds(),
                 createTeamRequest.getSeed(),
                 createTeamRequest.getStatus(),
                 tournament
         );
         return ResponseEntity.ok().body(team);
+    }
+
+    @DeleteMapping("/delete/{teamId}/{tournamentId}")
+    @Secured("ROLE_USER")
+    public ResponseEntity<Team> deleteTeam(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long teamId, @PathVariable String tournamentId) {
+        Tournament tournament = tournamentService.getTournamentById(Long.parseLong(tournamentId));
+        Team team = teamService.getById(teamId, tournament);
+        User user = userService.getUserFromPrincipal(userPrincipal);
+        permissionService.hasAccess(
+                tournament,
+                user,
+                tournament.getPermission().getCanTournamentRoleManageTeams(),
+                tournament.getPermission().getCanStaffMemberManageTeams()
+        );
+        teamService.removeTeam(tournament, team);
+        return ResponseEntity.ok().body(team);
+    }
+
+    @PutMapping("/update/{teamId}/{tournamentId}")
+    @Secured("ROLE_USER")
+    public ResponseEntity<Team> updateTeam(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long teamId, @PathVariable String tournamentId, @Valid @RequestBody CreateTeamRequest createTeamRequest) {
+        Tournament tournament = tournamentService.getTournamentById(Long.parseLong(tournamentId));
+        Team team = teamService.findById(teamId);
+        User user = userService.getUserFromPrincipal(userPrincipal);
+        permissionService.hasAccess(
+                tournament,
+                user,
+                tournament.getPermission().getCanTournamentRoleManageTeams(),
+                tournament.getPermission().getCanStaffMemberManageTeams()
+        );
+        Team updatedTeam = teamService.updateTeam(
+                tournament,
+                team,
+                createTeamRequest.getName(),
+                createTeamRequest.getCaptainId(),
+                createTeamRequest.getParticipantIds(),
+                createTeamRequest.getSeed(),
+                createTeamRequest.getStatus()
+        );
+        return ResponseEntity.ok().body(updatedTeam);
     }
 }
