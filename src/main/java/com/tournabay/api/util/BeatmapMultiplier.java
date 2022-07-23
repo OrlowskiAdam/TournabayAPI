@@ -2,8 +2,8 @@ package com.tournabay.api.util;
 
 /**
  * All calculations were made by IceDynamix
- * Profile page: https://osu.ppy.sh/users/8599070
- * Twitter: https://twitter.com/IceDynamix
+ * Profile page: <a href="https://osu.ppy.sh/users/8599070">https://osu.ppy.sh/users/8599070</a>
+ * Twitter: <a href="https://twitter.com/IceDynamix">https://twitter.com/IceDynamix</a>
  */
 public class BeatmapMultiplier {
 
