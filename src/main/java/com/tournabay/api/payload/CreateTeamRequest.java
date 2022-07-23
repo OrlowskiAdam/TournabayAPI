@@ -13,6 +13,8 @@ public class CreateTeamRequest {
     @NotNull(message = "Team name cannot be empty")
     @NotBlank(message = "Team name cannot be empty")
     private String name;
+    @NotNull(message = "Team is required to have a captain")
+    private Long captainId;
     private List<Long> participantIds;
     @NotNull(message = "Seed cannot be empty")
     private Seed seed;
