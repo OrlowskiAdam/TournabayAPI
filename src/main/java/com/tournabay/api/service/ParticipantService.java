@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,12 +40,12 @@ public class ParticipantService {
 
     /**
      * Get the participant with the given osuId from the given tournament, or create a new one if it doesn't exist.
-     *
+     * <p>
      * The first thing we do is get the participants from the tournament. Then we filter the
      * participants by the given osuId. Then we use findFirst() method to get the first participant that
      * matches the filter. If there is no participant that matches the filter, we create a new one
      *
-     * @param osuId The osuId of the user you want to get the participant of.
+     * @param osuId      The osuId of the user you want to get the participant of.
      * @param tournament The tournament that the participant is in
      * @return A participant object
      */
@@ -59,13 +60,13 @@ public class ParticipantService {
 
     /**
      * Return the participant with the given id, or throw an exception if no such participant exists.
-     *
+     * <p>
      * The first thing we do is get the list of participants from the tournament. Then we use the Stream API to filter the
      * list of participants to only those with the given id. Then we use the findFirst() method to get the first
      * participant in the list. If there is no such participant, we throw an exception
      *
      * @param participantId The id of the participant we want to retrieve.
-     * @param tournament The tournament that the participant is in.
+     * @param tournament    The tournament that the participant is in.
      * @return A participant
      */
     public Participant getById(Long participantId, Tournament tournament) {
@@ -79,11 +80,11 @@ public class ParticipantService {
 
     /**
      * Get all participants from a tournament that have an id in the given list of participantIds.
-     *
+     * <p>
      * If the number of the participantIds is not equal to the number of participants in the tournament, we throw an exception.
      *
      * @param participantIds The list of participantIds of the participants to be returned
-     * @param tournament The tournament to get the participants from.
+     * @param tournament     The tournament to get the participants from.
      * @return A list of participants that are in the tournament and have an id that is in the list of participantIds.
      */
     public List<Participant> getAllByIds(List<Long> participantIds, Tournament tournament) {
@@ -91,14 +92,32 @@ public class ParticipantService {
                 .stream()
                 .filter(participant -> participantIds.contains(participant.getId()))
                 .collect(Collectors.toList());
-        if (participants.size() != participantIds.size()) throw new BadRequestException("One or more participants not found!");
+        if (participants.size() != participantIds.size())
+            throw new BadRequestException("One or more participants not found!");
+        return participants;
+    }
+
+    /**
+     * Get all participants from a tournament by their ids, and throw an exception if any of them are not found.
+     *
+     * @param participantIds A set of participant IDs
+     * @param tournament     The tournament that the participants are in.
+     * @return A list of participants
+     */
+    public List<Participant> getAllByIds(Set<Long> participantIds, Tournament tournament) {
+        List<Participant> participants = tournament.getParticipants()
+                .stream()
+                .filter(participant -> participantIds.contains(participant.getId()))
+                .collect(Collectors.toList());
+        if (participants.size() != participantIds.size())
+            throw new BadRequestException("One or more participants not found!");
         return participants;
     }
 
     /**
      * Delete all participants with the given ids and return them.
      *
-     * @param ids The ids of the participants to be deleted.
+     * @param ids        The ids of the participants to be deleted.
      * @param tournament The tournament that the participants are in.
      * @return A list of participants.
      */
@@ -112,11 +131,12 @@ public class ParticipantService {
      * If the participant doesn't exist in the tournament, throw an exception. Otherwise, delete the participant.
      *
      * @param participant The participant to be deleted
-     * @param tournament The tournament that the participant is in.
+     * @param tournament  The tournament that the participant is in.
      * @return The participant that was deleted.
      */
     public Participant delete(Participant participant, Tournament tournament) {
-        if (!tournament.containsParticipant(participant)) throw new BadRequestException("Participant doesn't exist in tournament");
+        if (!tournament.containsParticipant(participant))
+            throw new BadRequestException("Participant doesn't exist in tournament");
         participantRepository.delete(participant);
         return participant;
     }
@@ -125,10 +145,11 @@ public class ParticipantService {
      * If the participant doesn't exist in the tournament, throw a BadRequestException, otherwise delete the participant.
      *
      * @param participantId The id of the participant to be deleted
-     * @param tournament The tournament that the participant is in.
+     * @param tournament    The tournament that the participant is in.
      */
     public void deleteById(Long participantId, Tournament tournament) {
-        if (!tournament.containsParticipantById(participantId)) throw new BadRequestException("Participant doesn't exist in tournament");
+        if (!tournament.containsParticipantById(participantId))
+            throw new BadRequestException("Participant doesn't exist in tournament");
         if (tournament instanceof TeamBasedTournament) {
             TeamBasedTournament teamBasedTournament = (TeamBasedTournament) tournament;
             boolean isCaptain = teamBasedTournament.getTeams().stream().anyMatch(team -> team.getCaptain().getId().equals(participantId));
@@ -139,11 +160,11 @@ public class ParticipantService {
 
     /**
      * Create a participant from an osuId, and add the user to the database if they don't exist.
-     *
+     * <p>
      * The first thing we do is call the `userService.addUserByOsuId(osuId)` function. This function will return a user
      * object if the user exists in the database, or create a new user and return that
      *
-     * @param osuId The osu! id of the user you want to add.
+     * @param osuId      The osu! id of the user you want to add.
      * @param tournament The tournament that the participant is being added to.
      * @return A participant object
      */
@@ -162,12 +183,12 @@ public class ParticipantService {
     /**
      * If the tournament doesn't already contain the participant, add the participant to the tournament and save the
      * participant.
-     *
+     * <p>
      * The first thing we do is check if the tournament already contains the participant. If it does, we throw a
      * BadRequestException. If it doesn't, we set the tournament of the participant to the tournament we're adding the
      * participant to, and then we save the participant
      *
-     * @param tournament The tournament to add the participant to.
+     * @param tournament  The tournament to add the participant to.
      * @param participant The participant to be added to the tournament.
      * @return A participant object
      */
