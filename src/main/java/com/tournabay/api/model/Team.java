@@ -42,4 +42,20 @@ public class Team {
     )
     @ManyToOne
     private TeamBasedTournament tournament;
+
+    @PrePersist
+    private void prePersist() {
+        if (this.seed == null) {
+            this.seed = Seed.UNKNOWN;
+        }
+        if (this.status == null) {
+            this.status = TeamStatus.UNKNOWN;
+        }
+        participants.forEach(participant -> participant.setTeam(this));
+    }
+
+    @PreRemove
+    private void removeParticipants() {
+        participants.forEach(participant -> participant.setTeam(null));
+    }
 }
