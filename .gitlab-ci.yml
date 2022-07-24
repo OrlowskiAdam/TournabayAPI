@@ -18,6 +18,8 @@ prepare:
 #    - sudo usermod -aG docker $USER
     - sudo apt install -y openjdk-8-jdk; java -version
     - sudo apt install -y maven; mvn -version
+  only:
+    - master
 
 prepare_database:
   stage: prepare_database
@@ -30,6 +32,8 @@ prepare_database:
     - docker run --name database --network host -v /opt/postgres:/var/lib/postgresql/data -e POSTGRES_USER=adam -e POSTGRES_PASSWORD=adam -d postgres:13.4 || true
     - docker exec -i database bash -c "createdb -U adam tournabay-prod" || true
     - docker exec -i database bash -c "createdb -U adam tournabay-dev" || true
+  only:
+    - master
 
 deploy_production:
   stage: deploy_production
