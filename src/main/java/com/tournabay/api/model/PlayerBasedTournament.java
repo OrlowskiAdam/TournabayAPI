@@ -5,7 +5,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -13,5 +16,8 @@ import javax.persistence.Entity;
 @Setter
 @SuperBuilder
 public class PlayerBasedTournament extends Tournament {
+
+    @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = {CascadeType.ALL})
+    private List<ParticipantVsMatch> matches;
 
 }
