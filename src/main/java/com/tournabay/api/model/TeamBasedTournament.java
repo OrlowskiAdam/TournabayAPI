@@ -18,4 +18,7 @@ public class TeamBasedTournament extends Tournament {
 
     @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = {CascadeType.ALL})
     private List<Team> teams;
+
+    @OneToMany(mappedBy = "tournament", orphanRemoval = true, cascade = {CascadeType.ALL})
+    private List<TeamVsMatch> matches;
 }
