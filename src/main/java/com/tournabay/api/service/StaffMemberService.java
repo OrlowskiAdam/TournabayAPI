@@ -32,12 +32,12 @@ public class StaffMemberService {
     /**
      * Get the staff member with the given id from the given tournament, or throw a ResourceNotFoundException if it
      * doesn't exist.
-     *
+     * <p>
      * The first thing we do is get the list of staff members from the tournament. Then we use the Stream API to filter the
      * list of staff members to only those with the given id. Then we use the findFirst() method to get the first staff
      * member in the list. If there is no staff member in the list, then we throw a ResourceNotFoundException
      *
-     * @param memberId The id of the staff member we want to retrieve
+     * @param memberId   The id of the staff member we want to retrieve
      * @param tournament The tournament that the staff member belongs to.
      * @return A StaffMember object
      */
@@ -52,7 +52,7 @@ public class StaffMemberService {
     /**
      * Get the staff member from the tournament that has the same user id as the user passed in.
      *
-     * @param user The user that is currently logged in.
+     * @param user       The user that is currently logged in.
      * @param tournament The tournament that the staff member is in
      * @return A StaffMember object
      */
@@ -67,7 +67,7 @@ public class StaffMemberService {
     /**
      * Get all staff members from the tournament that have an id in the list of ids.
      *
-     * @param ids A list of ids of the staff members you want to get.
+     * @param ids        A list of ids of the staff members you want to get.
      * @param tournament The tournament that the staff members belong to.
      * @return A list of staff members that are in the tournament and have an id that is in the list of ids.
      */
@@ -80,12 +80,12 @@ public class StaffMemberService {
 
     /**
      * "Get all staff members that have a specific role in a tournament."
-     *
+     * <p>
      * The first thing we do is check if the tournament has the role we're looking for. If it doesn't, we throw a
      * BadRequestException
      *
      * @param tournamentRole The role you want to get the staff members for
-     * @param tournament The tournament to get the staff members from
+     * @param tournament     The tournament to get the staff members from
      * @return A list of staff members that have the given tournament role.
      */
     public List<StaffMember> getStaffMembersByTournamentRole(TournamentRole tournamentRole, Tournament tournament) {
@@ -101,8 +101,8 @@ public class StaffMemberService {
     /**
      * Add a staff member to a tournament.
      *
-     * @param osuId The osuId of the user you want to add to the tournament.
-     * @param tournament The tournament that the staff member is being added to
+     * @param osuId           The osuId of the user you want to add to the tournament.
+     * @param tournament      The tournament that the staff member is being added to
      * @param tournamentRoles A list of roles that the staff member will have.
      * @return A StaffMember object
      */
@@ -129,7 +129,7 @@ public class StaffMemberService {
      * tournament, throw an exception. Otherwise, delete the staff member.
      *
      * @param staffMember The staff member to be deleted.
-     * @param tournament The tournament that the staff member is being removed from.
+     * @param tournament  The tournament that the staff member is being removed from.
      * @return The staff member that was deleted.
      */
     public StaffMember deleteStaffMember(StaffMember staffMember, Tournament tournament) {
@@ -159,9 +159,9 @@ public class StaffMemberService {
      * It updates a staff member's roles and discord ID
      *
      * @param staffMember The staff member that is being updated
-     * @param roles a list of roles that the staff member has
-     * @param discordId The discord ID of the staff member.
-     * @param tournament The tournament that the staff member is being added to.
+     * @param roles       a list of roles that the staff member has
+     * @param discordId   The discord ID of the staff member.
+     * @param tournament  The tournament that the staff member is being added to.
      * @return StaffMember
      */
     public StaffMember updateStaffMember(StaffMember staffMember, List<TournamentRole> roles, String discordId, Tournament tournament) {
@@ -190,9 +190,9 @@ public class StaffMemberService {
      * If the role is the default role, throw an exception. Otherwise, remove the role from the staff member's list of
      * roles, and if the staff member has no roles left, add the default role.
      *
-     * @param tournamentRole The role that is being disconnected from the staff members
+     * @param tournamentRole         The role that is being disconnected from the staff members
      * @param associatedStaffMembers List of StaffMember objects that are associated with the tournamentRole
-     * @param tournament The tournament that the role is being removed from.
+     * @param tournament             The tournament that the role is being removed from.
      * @return A list of staff members.
      */
     public List<StaffMember> disconnectTournamentRoleFromStaffMember(TournamentRole tournamentRole, List<StaffMember> associatedStaffMembers, Tournament tournament) {
