@@ -27,13 +27,13 @@ public abstract class Match {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @NotNull(message = "Start date cannot be null!")
     private LocalDate startDate;
 
-    @NotNull
+    @NotNull(message = "Start time cannot be null!")
     private LocalTime startTime;
 
-    @Transient
+    @NotNull(message = "Date cannot be null!")
     private LocalDateTime ldt;
 
     @NotNull
@@ -66,8 +66,9 @@ public abstract class Match {
     @OneToOne
     private MatchResult matchResult;
 
-    @PostLoad
-    private void postLoad() {
+    @PrePersist
+    @PreUpdate
+    private void preSave() {
         this.ldt = LocalDateTime.of(this.startDate, this.startTime);
     }
 }
