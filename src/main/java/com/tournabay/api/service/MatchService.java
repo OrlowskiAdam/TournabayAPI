@@ -1,12 +1,14 @@
 package com.tournabay.api.service;
 
 import com.tournabay.api.exception.BadRequestException;
+import com.tournabay.api.exception.ResourceNotFoundException;
 import com.tournabay.api.model.*;
 import com.tournabay.api.payload.CreateMatchRequest;
 import com.tournabay.api.repository.MatchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -166,6 +168,29 @@ public class MatchService {
                 .tournament(tournament)
                 .build();
         return matchRepository.save(teamVsMatch);
+    }
+
+    public Match deleteMatchById(Long matchId, Tournament tournament) {
+        if (tournament instanceof PlayerBasedTournament) {
+            PlayerBasedTournament playerBasedTournament = (PlayerBasedTournament) tournament;
+            Match match = playerBasedTournament.getMatches()
+                    .stream()
+                    .filter(m -> m.getId().equals(matchId))
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException("Match not found in the tournament!"));
+            matchRepository.delete(match);
+            return match;
+        } else if (tournament instanceof TeamBasedTournament) {
+            TeamBasedTournament teamBasedTournament = (TeamBasedTournament) tournament;
+            Match match = teamBasedTournament.getMatches()
+                    .stream()
+                    .filter(m -> m.getId().equals(matchId))
+                    .findFirst()
+                    .orElseThrow(() -> new ResourceNotFoundException("Match not found in the tournament!"));
+            matchRepository.delete(match);
+            return match;
+        }
+        throw new BadRequestException("Tournament type not supported!");
     }
 
 }
