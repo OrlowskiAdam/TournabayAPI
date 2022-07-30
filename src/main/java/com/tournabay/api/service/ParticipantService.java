@@ -70,6 +70,12 @@ public class ParticipantService {
      * @return A participant
      */
     public Participant getById(Long participantId, Tournament tournament) {
+        if (participantId == null) {
+            throw new BadRequestException("Participant id cannot be null!");
+        }
+        if (tournament == null) {
+            throw new BadRequestException("Tournament cannot be null!");
+        }
         return tournament
                 .getParticipants()
                 .stream()
