@@ -2,7 +2,6 @@ package com.tournabay.api.service;
 
 import com.tournabay.api.exception.BadRequestException;
 import com.tournabay.api.exception.ResourceNotFoundException;
-import com.tournabay.api.exception.SecurityBreachException;
 import com.tournabay.api.model.*;
 import com.tournabay.api.repository.StaffMemberRepository;
 import lombok.RequiredArgsConstructor;
