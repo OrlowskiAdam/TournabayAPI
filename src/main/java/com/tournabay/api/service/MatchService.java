@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -16,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MatchService {
     private final MatchRepository matchRepository;
-    private final TournamentService tournamentService;
     private final ParticipantService participantService;
     private final StaffMemberService staffMemberService;
     private final TeamService teamService;
@@ -35,11 +35,11 @@ public class MatchService {
             return createMatch(playerBasedTournament,
                     body.getRedParticipantId(),
                     body.getBlueParticipantId(),
-                    body.getDate(),
-                    body.getTime(),
-                    body.getRefereeIds(),
-                    body.getCommentatorIds(),
-                    body.getStreamerIds(),
+                    body.getStartDate().toLocalDate(),
+                    body.getStartDate().toLocalTime(),
+                    body.getRefereesId(),
+                    body.getCommentatorsId(),
+                    body.getStreamersId(),
                     body.getIsLive()
             );
         } else if (tournament instanceof TeamBasedTournament) {
@@ -47,11 +47,11 @@ public class MatchService {
             return createMatch(teamBasedTournament,
                     body.getRedTeamId(),
                     body.getBlueTeamId(),
-                    body.getDate(),
-                    body.getTime(),
-                    body.getRefereeIds(),
-                    body.getCommentatorIds(),
-                    body.getStreamerIds(),
+                    body.getStartDate().toLocalDate(),
+                    body.getStartDate().toLocalTime(),
+                    body.getRefereesId(),
+                    body.getCommentatorsId(),
+                    body.getStreamersId(),
                     body.getIsLive()
             );
         }
@@ -60,7 +60,7 @@ public class MatchService {
 
     /**
      * Create a match between two participants, with a list of referees, commentators, and streamers, and a start date and
-     * time, and whether or not it's live.
+     * time, and whether it's live.
      *
      * @param tournament        The tournament that the match is being created for.
      * @param redParticipantId  The id of the participant who will be the red participant in the match.
@@ -85,9 +85,16 @@ public class MatchService {
     ) {
         Participant redParticipant = participantService.getById(redParticipantId, tournament);
         Participant blueParticipant = participantService.getById(blueParticipantId, tournament);
+        if (redParticipant.equals(blueParticipant)) {
+            throw new BadRequestException("Red and blue participants cannot be the same!");
+        }
         List<StaffMember> referees = staffMemberService.getStaffMembersById(refereeIds, tournament);
-        List<StaffMember> commentators = staffMemberService.getStaffMembersById(commentatorIds, tournament);
-        List<StaffMember> streamers = staffMemberService.getStaffMembersById(streamerIds, tournament);
+        List<StaffMember> commentators = new ArrayList<>();
+        List<StaffMember> streamers = new ArrayList<>();
+        if (isLive) {
+            commentators = staffMemberService.getStaffMembersById(commentatorIds, tournament);
+            streamers = staffMemberService.getStaffMembersById(streamerIds, tournament);
+        }
         ParticipantVsMatch participantVsMatch = ParticipantVsMatch.builder()
                 .redParticipant(redParticipant)
                 .blueParticipant(blueParticipant)
@@ -98,6 +105,9 @@ public class MatchService {
                 .startTime(time)
                 .isLive(isLive)
                 .isCompleted(false)
+                .refereesLimit(tournament.getSettings().getRefereesLimit())
+                .commentatorsLimit(tournament.getSettings().getCommentatorsLimit())
+                .streamersLimit(tournament.getSettings().getStreamersLimit())
                 .tournament(tournament)
                 .build();
         return matchRepository.save(participantVsMatch);
@@ -118,7 +128,7 @@ public class MatchService {
      * @param isLive         If the match is live or not
      * @return A Match object
      */
-    public Match createMatch(TeamBasedTournament tournament,
+    protected Match createMatch(TeamBasedTournament tournament,
                              Long redTeamId,
                              Long blueTeamId,
                              LocalDate date,
@@ -130,9 +140,16 @@ public class MatchService {
     ) {
         Team redTeam = teamService.getById(redTeamId, tournament);
         Team blueTeam = teamService.getById(blueTeamId, tournament);
+        if (redTeam.equals(blueTeam)) {
+            throw new BadRequestException("Red and blue participants cannot be the same!");
+        }
         List<StaffMember> referees = staffMemberService.getStaffMembersById(refereeIds, tournament);
-        List<StaffMember> commentators = staffMemberService.getStaffMembersById(commentatorIds, tournament);
-        List<StaffMember> streamers = staffMemberService.getStaffMembersById(streamerIds, tournament);
+        List<StaffMember> commentators = new ArrayList<>();
+        List<StaffMember> streamers = new ArrayList<>();
+        if (isLive) {
+            commentators = staffMemberService.getStaffMembersById(commentatorIds, tournament);
+            streamers = staffMemberService.getStaffMembersById(streamerIds, tournament);
+        }
         TeamVsMatch teamVsMatch = TeamVsMatch.builder()
                 .redTeam(redTeam)
                 .blueTeam(blueTeam)
@@ -143,6 +160,9 @@ public class MatchService {
                 .startTime(time)
                 .isLive(isLive)
                 .isCompleted(false)
+                .refereesLimit(tournament.getSettings().getRefereesLimit())
+                .commentatorsLimit(tournament.getSettings().getCommentatorsLimit())
+                .streamersLimit(tournament.getSettings().getStreamersLimit())
                 .tournament(tournament)
                 .build();
         return matchRepository.save(teamVsMatch);
