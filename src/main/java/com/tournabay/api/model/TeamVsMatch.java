@@ -11,6 +11,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.PreRemove;
+import javax.validation.constraints.NotNull;
 
 @SuperBuilder
 @Entity
@@ -37,5 +39,12 @@ public class TeamVsMatch extends Match {
             property = "id"
     )
     @ManyToOne
+    @NotNull
     private TeamBasedTournament tournament;
+
+    @PreRemove
+    private void preRemove() {
+        this.tournament.getMatches().remove(this);
+        this.tournament = null;
+    }
 }
