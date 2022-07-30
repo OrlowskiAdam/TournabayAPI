@@ -131,14 +131,14 @@ public class MatchService {
      * @return A Match object
      */
     protected Match createMatch(TeamBasedTournament tournament,
-                             Long redTeamId,
-                             Long blueTeamId,
-                             LocalDate date,
-                             LocalTime time,
-                             List<Long> refereeIds,
-                             List<Long> commentatorIds,
-                             List<Long> streamerIds,
-                             Boolean isLive
+                                Long redTeamId,
+                                Long blueTeamId,
+                                LocalDate date,
+                                LocalTime time,
+                                List<Long> refereeIds,
+                                List<Long> commentatorIds,
+                                List<Long> streamerIds,
+                                Boolean isLive
     ) {
         Team redTeam = teamService.getById(redTeamId, tournament);
         Team blueTeam = teamService.getById(blueTeamId, tournament);
@@ -170,6 +170,13 @@ public class MatchService {
         return matchRepository.save(teamVsMatch);
     }
 
+    /**
+     * Find the match with the given id in the tournament's matches and delete it
+     *
+     * @param matchId    The id of the match to be deleted.
+     * @param tournament The tournament that the match belongs to.
+     * @return Match
+     */
     public Match deleteMatchById(Long matchId, Tournament tournament) {
         if (tournament instanceof PlayerBasedTournament) {
             PlayerBasedTournament playerBasedTournament = (PlayerBasedTournament) tournament;
