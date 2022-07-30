@@ -54,24 +54,17 @@ public abstract class Match {
     @Min(value = 1, message = "Streamers limit must be greater than 0")
     private Integer streamersLimit;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<StaffMember> referees;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<StaffMember> commentators;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<StaffMember> streamers;
 
     @OneToOne
     private MatchResult matchResult;
-
-    @JsonIdentityInfo(
-            generator = ObjectIdGenerators.PropertyGenerator.class,
-            property = "id"
-    )
-    @ManyToOne
-    private Tournament tournament;
 
     @PostLoad
     private void postLoad() {
