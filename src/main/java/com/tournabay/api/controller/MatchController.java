@@ -27,4 +27,12 @@ public class MatchController {
         return ResponseEntity.ok(match);
     }
 
+    @DeleteMapping("/delete/{matchId}/{tournamentId}")
+    @Secured("ROLE_USER")
+    public ResponseEntity<Match> deleteMatch(@PathVariable Long matchId, @PathVariable Long tournamentId) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        Match match = matchService.deleteMatchById(matchId, tournament);
+        return ResponseEntity.ok(match);
+    }
+
 }
