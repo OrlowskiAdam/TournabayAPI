@@ -3,6 +3,7 @@ package com.tournabay.api.controller;
 import com.tournabay.api.model.Match;
 import com.tournabay.api.model.Tournament;
 import com.tournabay.api.payload.CreateMatchRequest;
+import com.tournabay.api.payload.UpdateMatchRequest;
 import com.tournabay.api.service.MatchService;
 import com.tournabay.api.service.TournamentService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,15 @@ public class MatchController {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Match match = matchService.deleteMatchById(matchId, tournament);
         return ResponseEntity.ok(match);
+    }
+
+    @PutMapping("/update/{matchId}/{tournamentId}")
+    @Secured("ROLE_USER")
+    public ResponseEntity<Match> updateMatch(@PathVariable Long matchId, @PathVariable Long tournamentId, @RequestBody UpdateMatchRequest body) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        Match match = matchService.getById(matchId, tournament);
+        Match updatedMatch = matchService.updateMatch(tournament, match, body);
+        return ResponseEntity.ok(updatedMatch);
     }
 
 }
