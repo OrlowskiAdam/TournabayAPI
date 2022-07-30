@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -50,12 +51,33 @@ public class Settings {
     @NotNull
     private Boolean allowTeamsRegistration;
 
+    @NotNull
+    @Min(value = 1, message = "Referees limit must be greater than 0")
+    private Integer refereesLimit;
+
+    @NotNull
+    @Min(value = 1, message = "Commentators limit must be greater than 0")
+    private Integer commentatorsLimit;
+
+    @NotNull
+    @Min(value = 1, message = "Streamers limit must be greater than 0")
+    private Integer streamersLimit;
+
     public void validate() {
         if (minParticipantRank > maxParticipantRank) {
             throw new IllegalArgumentException("Minimum participant's rank must be lower than maximum participant's rank");
         }
         if (baseTeamSize > maxTeamSize) {
             throw new IllegalArgumentException("Base team size must be lower than maximum team size");
+        }
+        if (refereesLimit <= 0) {
+            throw new IllegalArgumentException("Referees limit must be greater than 0");
+        }
+        if (commentatorsLimit <= 0) {
+            throw new IllegalArgumentException("Commentators limit must be greater than 0");
+        }
+        if (streamersLimit <= 0) {
+            throw new IllegalArgumentException("Streamers limit must be greater than 0");
         }
     }
 }
