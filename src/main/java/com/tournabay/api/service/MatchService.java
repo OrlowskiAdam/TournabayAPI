@@ -153,8 +153,8 @@ public class MatchService {
             return updateMatch(
                     teamVsMatch,
                     teamBasedTournament,
-                    body.getRedParticipantId(),
-                    body.getBlueParticipantId(),
+                    body.getRedTeamId(),
+                    body.getBlueTeamId(),
                     body.getStartDate().toLocalDate(),
                     body.getStartDate().toLocalTime(),
                     body.getRefereesId(),
