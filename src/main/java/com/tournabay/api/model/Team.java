@@ -1,13 +1,13 @@
 package com.tournabay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -57,5 +57,10 @@ public class Team {
     @PreRemove
     private void removeParticipants() {
         participants.forEach(participant -> participant.setTeam(null));
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Team && ((Team) obj).getId().equals(this.getId());
     }
 }

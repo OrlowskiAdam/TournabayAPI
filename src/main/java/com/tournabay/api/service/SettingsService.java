@@ -27,6 +27,9 @@ public class SettingsService {
                 .maxTeamSize(8)
                 .allowParticipantsRegistration(false)
                 .allowTeamsRegistration(false)
+                .refereesLimit(1)
+                .commentatorsLimit(2)
+                .streamersLimit(1)
                 .build();
         return settingsRepository.save(settings);
     }

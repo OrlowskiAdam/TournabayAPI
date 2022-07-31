@@ -118,15 +118,20 @@ public class PermissionService {
     }
 
     /**
-     * If the user is the owner of the tournament, or if the user is a staff member of the tournament with a permitted
-     * role, or if the user is a staff member of the tournament that is in the list of permitted staff members, then the
-     * user has access.
+     * "If the user is the owner of the tournament, or if the user is a staff member of the tournament with a permitted
+     * role, or if the user is a staff member of the tournament with a permitted staff member, then return, otherwise throw
+     * a ForbiddenException."
      *
-     * @param tournament The tournament that the user is trying to access
-     * @param user The user that is trying to access the resource
-     * @param permittedRoles A list of TournamentRoles that the user must have in order to have access to the resource.
+     * The function is a bit long, but it's not too bad. It's a bit hard to read, but it's not too bad. It's a bit hard to
+     * understand, but it's not too bad. It's a bit hard to test, but it's not too bad. It's a bit hard to maintain, but
+     * it's not too bad. It's a bit hard to extend, but it's not too bad. It's a bit hard to reuse, but it's not too bad
+     *
+     * @param tournament The tournament to check access for
+     * @param user The user that is trying to access the tournament
+     * @param permittedRoles A list of TournamentRoles that the user must have in order to have access to the tournament.
      * @param permittedStaffMembers A list of staff members that are allowed to access the resource.
      */
+    @Deprecated
     public void hasAccess(Tournament tournament, User user, List<TournamentRole> permittedRoles, List<StaffMember> permittedStaffMembers) {
         if (tournament.getOwner().getId().equals(user.getId())) return;
         StaffMember staffMember = tournament.getStaffMembers()

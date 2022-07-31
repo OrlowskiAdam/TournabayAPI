@@ -23,6 +23,7 @@ public class Participant {
     @NotNull
     private LocalDateTime joinedAt;
 
+    @NotNull
     @ManyToOne
     private User user;
 
@@ -59,4 +60,8 @@ public class Participant {
         }
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Participant && ((Participant) obj).getId().equals(id);
+    }
 }
