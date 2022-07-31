@@ -13,6 +13,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -92,6 +93,11 @@ public abstract class Tournament {
     @PreUpdate
     private void onPreUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    @PostLoad
+    private void onPostLoad() {
+        this.getRoles().sort(Comparator.comparing(TournamentRole::getPosition));
     }
 
     public boolean containsParticipant(Participant participant) {
