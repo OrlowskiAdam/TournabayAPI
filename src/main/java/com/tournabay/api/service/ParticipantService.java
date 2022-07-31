@@ -1,5 +1,6 @@
 package com.tournabay.api.service;
 
+import com.tournabay.api.exception.AppException;
 import com.tournabay.api.exception.BadRequestException;
 import com.tournabay.api.exception.ResourceNotFoundException;
 import com.tournabay.api.model.*;
@@ -74,7 +75,7 @@ public class ParticipantService {
             throw new BadRequestException("Participant id cannot be null!");
         }
         if (tournament == null) {
-            throw new BadRequestException("Tournament cannot be null!");
+            throw new AppException("Tournament cannot be null!");
         }
         return tournament
                 .getParticipants()
