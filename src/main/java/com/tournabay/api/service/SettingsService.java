@@ -17,6 +17,7 @@ public class SettingsService {
      * @param tournament The tournament to which the settings belong.
      * @return Settings
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Settings createDefaultSettings(Tournament tournament) {
         Settings settings = Settings.builder()
                 .tournament(tournament)

@@ -87,6 +87,7 @@ public class TeamService {
      * @param team       The team to be removed.
      * @return The team that was removed.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Team removeTeam(Tournament tournament, Team team) {
         if (tournament instanceof TeamBasedTournament) {
             teamRepository.delete(team);

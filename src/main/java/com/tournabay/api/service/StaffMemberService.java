@@ -131,6 +131,7 @@ public class StaffMemberService {
      * @param tournament  The tournament that the staff member is being removed from.
      * @return The staff member that was deleted.
      */
+    @SuppressWarnings("UnusedReturnValue")
     public StaffMember deleteStaffMember(StaffMember staffMember, Tournament tournament) {
         if (!tournament.containsStaffMember(staffMember))
             throw new BadRequestException("This user is not a staff member!");
@@ -147,6 +148,7 @@ public class StaffMemberService {
      * @param staffMembers The list of staff members to be deleted.
      * @return A list of StaffMembers
      */
+    @SuppressWarnings("UnusedReturnValue")
     @Deprecated
     public List<StaffMember> deleteStaffMembers(List<StaffMember> staffMembers) {
         staffMemberRepository.deleteAll(staffMembers);

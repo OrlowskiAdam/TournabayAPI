@@ -24,6 +24,7 @@ public class PermissionService {
      * @param tournamentRoles A list of all the tournament roles that exist in the tournament.
      * @return A Permission object
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Permission createDefaultPermission(Tournament tournament, List<TournamentRole> tournamentRoles) {
         Permission permission = Permission.builder()
                 .tournament(tournament)

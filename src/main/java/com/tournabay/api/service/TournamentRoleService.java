@@ -43,6 +43,7 @@ public class TournamentRoleService {
      * @return A list of TournamentRole objects
      */
     @Deprecated
+    @SuppressWarnings("UnusedReturnValue")
     public List<TournamentRole> getAllById(Iterable<Long> ids) {
         return tournamentRoleRepository.findAllById(ids);
     }
