@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,7 +31,7 @@ public class TournamentSettingsController {
      */
     @PatchMapping("/tournament/{tournamentId}/settings")
     @Secured("ROLE_USER")
-    @PostAuthorize("hasPermission(#tournamentId, 'ManageSettings')")
+    @PreAuthorize("hasPermission(#tournamentId, 'ManageSettings')")
     public ResponseEntity<Settings> updateSettings(@PathVariable Long tournamentId, @RequestBody Settings body) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Settings settings = settingsService.updateSettings(tournament, body);

@@ -1,5 +1,6 @@
 package com.tournabay.api.service;
 
+import com.tournabay.api.exception.AppException;
 import com.tournabay.api.exception.BadRequestException;
 import com.tournabay.api.exception.ResourceNotFoundException;
 import com.tournabay.api.model.*;
@@ -112,12 +113,28 @@ public class TeamService {
      * @return A team object
      */
     public Team getById(Long teamId, Tournament tournament) {
+        if (teamId == null)
+            throw new BadRequestException("Team id cannot be null!");
+        if (tournament == null)
+            throw new AppException("Tournament cannot be null!");
         if (tournament instanceof TeamBasedTournament) {
             return teamRepository.findById(teamId).orElseThrow(() -> new ResourceNotFoundException("Team not found!"));
         }
         throw new BadRequestException("Invalid tournament type!");
     }
 
+    /**
+     * It updates a team in a tournament
+     *
+     * @param tournament     The tournament that the team belongs to.
+     * @param team           The team to be updated
+     * @param name           The name of the team
+     * @param captainId      The id of the captain of the team
+     * @param participantIds A list of participant IDs that will be added to the team.
+     * @param seed           The seed of the team.
+     * @param status         The status of the team.
+     * @return A team object
+     */
     public Team updateTeam(Tournament tournament, Team team, String name, Long captainId, List<Long> participantIds, Seed seed, TeamStatus status) {
         if (tournament instanceof TeamBasedTournament) {
             TeamBasedTournament teamBasedTournament = (TeamBasedTournament) tournament;

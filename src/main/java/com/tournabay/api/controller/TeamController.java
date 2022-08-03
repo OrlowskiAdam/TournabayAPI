@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,7 +34,7 @@ public class TeamController {
      */
     @PostMapping("/create/{tournamentId}")
     @Secured("ROLE_USER")
-    @PostAuthorize("hasPermission(#tournamentId, 'ManageTeams')")
+    @PreAuthorize("hasPermission(#tournamentId, 'ManageTeams')")
     public ResponseEntity<Team> createTeam(@PathVariable Long tournamentId, @Valid @RequestBody CreateTeamRequest createTeamRequest) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Team team = teamService.createTeam(
@@ -56,7 +57,7 @@ public class TeamController {
      */
     @DeleteMapping("/delete/{teamId}/{tournamentId}")
     @Secured("ROLE_USER")
-    @PostAuthorize("hasPermission(#tournamentId, 'ManageTeams')")
+    @PreAuthorize("hasPermission(#tournamentId, 'ManageTeams')")
     public ResponseEntity<Team> deleteTeam(@PathVariable Long teamId, @PathVariable String tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(Long.parseLong(tournamentId));
         Team team = teamService.getById(teamId, tournament);
@@ -74,7 +75,7 @@ public class TeamController {
      */
     @PutMapping("/update/{teamId}/{tournamentId}")
     @Secured("ROLE_USER")
-    @PostAuthorize("hasPermission(#tournamentId, 'ManageTeams')")
+    @PreAuthorize("hasPermission(#tournamentId, 'ManageTeams')")
     public ResponseEntity<Team> updateTeam(@PathVariable Long teamId, @PathVariable String tournamentId, @Valid @RequestBody CreateTeamRequest createTeamRequest) {
         Tournament tournament = tournamentService.getTournamentById(Long.parseLong(tournamentId));
         Team team = teamService.findById(teamId);

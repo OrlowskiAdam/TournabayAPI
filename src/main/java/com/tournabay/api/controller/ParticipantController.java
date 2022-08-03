@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ public class ParticipantController {
      * @return A ResponseEntity with the added participant.
      */
     @Secured("ROLE_USER")
-    @PostAuthorize("hasPermission(#tournamentId, 'ManageParticipants')")
+    @PreAuthorize("hasPermission(#tournamentId, 'ManageParticipants')")
     @PostMapping("/add/{osuId}/{tournamentId}")
     public ResponseEntity<Participant> addParticipant(@PathVariable Long osuId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
@@ -48,7 +49,7 @@ public class ParticipantController {
      * @return A ResponseEntity with a status code of 200.
      */
     @Secured("ROLE_USER")
-    @PostAuthorize("hasPermission(#tournamentId, 'ManageParticipants')")
+    @PreAuthorize("hasPermission(#tournamentId, 'ManageParticipants')")
     @PostMapping("/delete/{participantId}/{tournamentId}")
     public ResponseEntity<Void> deleteParticipant(@PathVariable Long participantId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);

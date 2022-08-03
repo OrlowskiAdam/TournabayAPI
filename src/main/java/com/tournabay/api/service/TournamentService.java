@@ -30,9 +30,7 @@ public class TournamentService {
      * @return A tournament object with the roles sorted by position.
      */
     public Tournament getTournamentById(Long id) {
-        Tournament tournament = tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
-        tournament.getRoles().sort(Comparator.comparing(TournamentRole::getPosition));
-        return tournament;
+        return tournamentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tournament not found!"));
     }
 
     /**
