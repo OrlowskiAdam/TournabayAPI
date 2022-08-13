@@ -55,7 +55,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                             user.getProvider() + " account. Please use your " + user.getProvider() +
                             " account to login.");
                 }
-                user = updateExistingUser(user, oAuth2UserInfo);
+                user = updateExistingUser(user, oAuth2UserInfo, oAuth2UserRequest);
             } else {
                 user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
             }
@@ -77,19 +77,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 0,
                 oAuth2UserInfo.pmFriendsOnly(),
                 oAuth2UserInfo.isBot(),
+                oAuth2UserRequest.getAccessToken().getTokenValue(),
                 AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()),
                 Collections.singleton(userRole)
         );
         return userRepository.save(user);
     }
 
-    private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
+    private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo, OAuth2UserRequest oAuth2UserRequest) {
         existingUser.setUsername(oAuth2UserInfo.getUsername());
         existingUser.setAvatarUrl(oAuth2UserInfo.getAvatarUrl());
         existingUser.setCountryCode(oAuth2UserInfo.getCountryCode());
         existingUser.setCoverUrl(oAuth2UserInfo.getCoverUrl());
         existingUser.setIsBot(oAuth2UserInfo.isBot());
         existingUser.setPmFriendsOnly(oAuth2UserInfo.pmFriendsOnly());
+        existingUser.setOsuToken(oAuth2UserRequest.getAccessToken().getTokenValue());
         return userRepository.save(existingUser);
     }
 }
