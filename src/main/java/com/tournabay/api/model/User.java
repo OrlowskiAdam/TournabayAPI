@@ -3,6 +3,7 @@ package com.tournabay.api.model;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -29,6 +30,7 @@ public class User {
             int rank,
             Boolean pmFriendsOnly,
             Boolean isBot,
+            String osuToken,
             @NotNull AuthProvider provider,
             Set<Role> roles
     ) {
@@ -41,6 +43,7 @@ public class User {
         this.rank = rank;
         this.pmFriendsOnly = pmFriendsOnly;
         this.isBot = isBot;
+        this.osuToken = osuToken;
         this.provider = provider;
         this.roles = roles;
     }
@@ -100,6 +103,10 @@ public class User {
     private Boolean pmFriendsOnly;
 
     private Boolean isBot;
+
+    @JsonIgnore
+    @Lob
+    private String osuToken;
 
     @NotNull
     @Enumerated(EnumType.STRING)
