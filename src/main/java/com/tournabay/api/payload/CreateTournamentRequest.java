@@ -2,6 +2,7 @@ package com.tournabay.api.payload;
 
 import com.tournabay.api.model.GameMode;
 import com.tournabay.api.model.ScoreType;
+import com.tournabay.api.model.Stage;
 import com.tournabay.api.model.TeamFormat;
 import lombok.Getter;
 import lombok.ToString;
@@ -21,4 +22,5 @@ public class CreateTournamentRequest {
     private TeamFormat teamFormat;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private Stage maxStage;
 }
