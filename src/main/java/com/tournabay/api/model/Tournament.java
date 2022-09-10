@@ -65,6 +65,10 @@ public abstract class Tournament {
     @Enumerated(EnumType.STRING)
     protected TeamFormat teamFormat;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    protected Stage maxStage;
+
     @OneToOne(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     protected Settings settings;
 
