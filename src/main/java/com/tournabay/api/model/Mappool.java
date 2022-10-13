@@ -17,14 +17,25 @@ public class Mappool {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OrderBy("position ASC")
     @OneToMany(mappedBy = "mappool", cascade = CascadeType.ALL)
-    private List<Beatmap> beatmaps = new ArrayList<>();
+    private List<BeatmapModification> beatmapModifications = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private Stage stage;
 
     private String name;
 
+    private Boolean isReleased;
+
     @ManyToOne
     private Tournament tournament;
+
+    @PreUpdate
+    @PrePersist
+    public void preUpdate() {
+        if (beatmapModifications != null) {
+            beatmapModifications.forEach(b -> b.setMappool(this));
+        }
+    }
 }

@@ -6,8 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MappoolRepository extends JpaRepository<Mappool, Long> {
-    List<Mappool> findAllByTournament(Tournament tournament);
+    List<Mappool> findAllByTournamentOrderByIdAsc(Tournament tournament);
+    Optional<Mappool> findByIdAndTournament(Long mappoolId, Tournament tournament);
 }

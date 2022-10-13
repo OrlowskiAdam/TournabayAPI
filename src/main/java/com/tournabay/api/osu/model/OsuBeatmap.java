@@ -19,4 +19,5 @@ public class OsuBeatmap {
     private Float drain;
     private String url;
     private Integer max_combo;
+    private OsuBeatmapset beatmapset;
 }

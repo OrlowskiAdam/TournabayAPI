@@ -1,5 +1,8 @@
 package com.tournabay.api.osu;
 
+import com.tournabay.api.osu.model.BeatmapAttributesBody;
+import com.tournabay.api.osu.model.BeatmapDifficultyAttributes;
+import com.tournabay.api.osu.model.BeatmapDifficultyAttributesWrapper;
 import com.tournabay.api.osu.model.OsuBeatmap;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,6 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Optional;
 
 @Getter
 public class OsuApiClient implements RestClient, Closeable {
@@ -51,7 +55,12 @@ public class OsuApiClient implements RestClient, Closeable {
     }
 
     @Override
-    public OsuBeatmap getBeatmap(Long beatmapId) throws IOException {
-        return this.osuApi.getBeatmap(beatmapId).execute().body();
+    public Optional<OsuBeatmap> getBeatmap(Long beatmapId) throws IOException {
+        return Optional.ofNullable(this.osuApi.getBeatmap(beatmapId).execute().body());
+    }
+
+    @Override
+    public Optional<BeatmapDifficultyAttributesWrapper> getBeatmapAttributes(Long beatmapId, BeatmapAttributesBody body) throws IOException {
+        return Optional.ofNullable(this.osuApi.getBeatmapAttributes(beatmapId, body).execute().body());
     }
 }

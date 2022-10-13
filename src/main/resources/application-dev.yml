@@ -4,9 +4,9 @@ server:
     include-binding-errors: always
 spring:
   datasource:
-    url: jdbc:postgresql://94.251.186.176:5555/db-dev
-    username: adam
-    password: adam
+    url: jdbc:postgresql://localhost:5432/db-dev
+    username: postgres
+    password: pass
     tomcat:
       test-while-idle: true
       time-between-eviction-runs-millis: 60000
@@ -17,6 +17,7 @@ spring:
       validation-query: SELECT 1
     hikari:
       max-lifetime: 600000
+      auto-commit: false
     driver-class-name: org.postgresql.Driver
     properties:
       hibernate:
@@ -24,7 +25,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
   security:
     oauth2:

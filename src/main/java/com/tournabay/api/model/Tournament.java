@@ -79,6 +79,7 @@ public abstract class Tournament {
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
     protected List<StaffMember> staffMembers = new ArrayList<>();
 
+    @OrderBy("position ASC")
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL)
     protected List<TournamentRole> roles = new ArrayList<>();
 
@@ -97,11 +98,6 @@ public abstract class Tournament {
     @PreUpdate
     private void onPreUpdate() {
         this.updatedAt = LocalDateTime.now();
-    }
-
-    @PostLoad
-    private void onPostLoad() {
-        this.getRoles().sort(Comparator.comparing(TournamentRole::getPosition));
     }
 
     public boolean containsParticipant(Participant participant) {

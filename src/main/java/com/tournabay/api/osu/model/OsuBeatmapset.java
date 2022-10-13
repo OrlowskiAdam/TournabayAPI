@@ -14,5 +14,6 @@ public class OsuBeatmapset {
     private String title_unicode;
     private Long user_id;
     private Float bpm;
+    private Long max_combo;
 
 }
