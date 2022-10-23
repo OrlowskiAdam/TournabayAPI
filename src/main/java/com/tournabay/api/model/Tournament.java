@@ -89,6 +89,9 @@ public abstract class Tournament {
     @OneToOne(mappedBy = "tournament", cascade = CascadeType.ALL)
     private Permission permission;
 
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Group> groups = new ArrayList<>();
+
     @PrePersist
     private void onPrePersist() {
         this.createdAt = LocalDateTime.now();
