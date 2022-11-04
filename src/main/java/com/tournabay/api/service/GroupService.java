@@ -189,4 +189,7 @@ public interface GroupService {
      */
     Group detachItemsFromGroup(Group group);
 
+    void updateTeamBasedGroupStandings(TeamBasedGroup group, Team winner, Team loser);
+
+    void updatePlayerBasedGroupStandings(PlayerBasedGroup group, Participant winner, Participant loser);
 }

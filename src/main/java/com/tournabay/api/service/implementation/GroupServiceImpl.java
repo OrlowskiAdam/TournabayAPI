@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -135,16 +134,6 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     public List<Group> deleteGroup(Tournament tournament, Group group) {
-//        List<Group> groups = tournament.getGroups()
-//                .stream()
-//                .filter(g -> !g.getId().equals(group.getId()))
-//                .collect(Collectors.toList());
-//        group.setTournament(null);
-//        detachItemsFromGroup(group);
-//        groupRepository.delete(group);
-//        groups = reassignSymbols(groups);
-//        tournament.setGroups(groups);
-//        return groups;
         tournament.getGroups().remove(group);
         group.setTournament(null);
         tournamentService.save(tournament);
@@ -309,12 +298,14 @@ public class GroupServiceImpl implements GroupService {
             boolean areTeamsInGroup = this.areTeamsInGroup(group, ((TeamVsMatch) match).getRedTeam(), ((TeamVsMatch) match).getBlueTeam());
             if (!areTeamsInGroup) throw new BadRequestException("One or both teams are not in the group!");
             group.getMatches().add(match);
+            match.setGroup(group);
             return groupRepository.save(group);
         } else if (tournament instanceof PlayerBasedTournament && group instanceof PlayerBasedGroup && match instanceof ParticipantVsMatch) {
             boolean areParticipantsInGroup = this.areParticipantsInGroup(group, ((ParticipantVsMatch) match).getRedParticipant(), ((ParticipantVsMatch) match).getBlueParticipant());
             if (!areParticipantsInGroup)
                 throw new BadRequestException("One or both participants are not in the group!");
             group.getMatches().add(match);
+            match.setGroup(group);
             return groupRepository.save(group);
         }
         throw new BadRequestException("Incorrect match type for the group type");
@@ -465,6 +456,46 @@ public class GroupServiceImpl implements GroupService {
             return groupRepository.save(teamBasedGroup);
         }
         throw new IncorrectGroupType("Incorrect group type! Should be team based or participant based.");
+    }
+
+    @Override
+    public void updateTeamBasedGroupStandings(TeamBasedGroup group, Team winner, Team loser) {
+        TeamGroupScore groupScoreWinner = group
+                .getTeams()
+                .stream()
+                .filter(team -> team.getTeam().getId().equals(winner.getId()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found"));
+        groupScoreWinner.setWins(groupScoreWinner.getWins() + 1);
+        TeamGroupScore groupScoreLoser = group
+                .getTeams()
+                .stream()
+                .filter(team -> team.getTeam().getId().equals(loser.getId()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found"));
+        groupScoreLoser.setLosses(groupScoreLoser.getLosses() + 1);
+        groupScoreService.save(groupScoreWinner);
+        groupScoreService.save(groupScoreLoser);
+    }
+
+    @Override
+    public void updatePlayerBasedGroupStandings(PlayerBasedGroup group, Participant winner, Participant loser) {
+        PlayerGroupScore groupScoreWinner = group
+                .getParticipants()
+                .stream()
+                .filter(participant -> participant.getParticipant().getId().equals(winner.getId()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Participant not found"));
+        groupScoreWinner.setWins(groupScoreWinner.getWins() + 1);
+        PlayerGroupScore groupScoreLoser = ((PlayerBasedGroup) group)
+                .getParticipants()
+                .stream()
+                .filter(participant -> participant.getParticipant().getId().equals(loser.getId()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Participant not found"));
+        groupScoreLoser.setLosses(groupScoreLoser.getLosses() + 1);
+        groupScoreService.save(groupScoreWinner);
+        groupScoreService.save(groupScoreLoser);
     }
 
 }

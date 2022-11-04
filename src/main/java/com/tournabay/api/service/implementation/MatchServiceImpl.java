@@ -77,7 +77,7 @@ public class MatchServiceImpl implements MatchService {
             if (createMatchRequest.getGroupId() == null)
                 throw new BadRequestException("Group id is required for group stage!");
             Group group = groupService.findById(playerBasedTournament, createMatchRequest.getGroupId());
-            match.setGroup(group);
+            groupService.assignMatchToGroup(playerBasedTournament, group, match);
         }
         return this.save(match);
     }
@@ -111,7 +111,7 @@ public class MatchServiceImpl implements MatchService {
             if (createMatchRequest.getGroupId() == null)
                 throw new BadRequestException("Group id is required for group stage!");
             Group group = groupService.findById(teamBasedTournament, createMatchRequest.getGroupId());
-            match.setGroup(group);
+            groupService.assignMatchToGroup(teamBasedTournament, group, match);
         }
         return this.save(match);
     }
@@ -228,6 +228,10 @@ public class MatchServiceImpl implements MatchService {
             Team loser = matchResultService.determineTeamLoser(teamVsMatch, matchResult);
             teamVsMatch.setWinner(winner);
             teamVsMatch.setLoser(loser);
+            if (match.getStage().equals(Stage.GROUP_STAGE)) {
+                TeamBasedGroup group = (TeamBasedGroup) match.getGroup();
+                groupService.updateTeamBasedGroupStandings(group, winner, loser);
+            }
             return this.save(teamVsMatch);
         } else if (tournament instanceof PlayerBasedTournament && match instanceof ParticipantVsMatch) {
             ParticipantVsMatch participantVsMatch = (ParticipantVsMatch) match;
@@ -238,6 +242,10 @@ public class MatchServiceImpl implements MatchService {
             Participant loser = matchResultService.determineParticipantLoser(participantVsMatch, matchResult);
             participantVsMatch.setWinner(winner);
             participantVsMatch.setLoser(loser);
+            if (match.getStage().equals(Stage.GROUP_STAGE)) {
+                PlayerBasedGroup group = (PlayerBasedGroup) match.getGroup();
+                groupService.updatePlayerBasedGroupStandings(group, winner, loser);
+            }
             return this.save(participantVsMatch);
         }
         throw new BadRequestException("Incorrect match type!");
