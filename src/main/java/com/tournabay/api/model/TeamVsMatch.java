@@ -8,10 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.PreRemove;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @SuperBuilder
@@ -22,16 +19,16 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class TeamVsMatch extends Match {
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.DETACH)
     private Team redTeam;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.DETACH)
     private Team blueTeam;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.DETACH)
     private Team winner;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.DETACH)
     private Team loser;
 
     @JsonIdentityInfo(
@@ -41,10 +38,4 @@ public class TeamVsMatch extends Match {
     @ManyToOne
     @NotNull
     private TeamBasedTournament tournament;
-
-    @PreRemove
-    private void preRemove() {
-        this.tournament.getMatches().remove(this);
-        this.tournament = null;
-    }
 }

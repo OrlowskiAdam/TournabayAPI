@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.util.List;
@@ -18,5 +17,5 @@ import java.util.List;
 public class PlayerBasedGroup extends Group {
 
     @OneToMany
-    private List<Participant> participants;
+    private List<PlayerGroupScore> participants;
 }

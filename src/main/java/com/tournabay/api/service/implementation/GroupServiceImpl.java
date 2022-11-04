@@ -6,12 +6,12 @@ import com.tournabay.api.exception.IncorrectTournamentType;
 import com.tournabay.api.exception.ResourceNotFoundException;
 import com.tournabay.api.model.*;
 import com.tournabay.api.repository.GroupRepository;
+import com.tournabay.api.service.GroupScoreService;
 import com.tournabay.api.service.GroupService;
 import com.tournabay.api.service.ParticipantService;
 import com.tournabay.api.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -24,6 +24,18 @@ public class GroupServiceImpl implements GroupService {
     private final GroupRepository groupRepository;
     private final TeamService teamService;
     private final ParticipantService participantService;
+    private final GroupScoreService groupScoreService;
+
+    /**
+     * It saves the group to the database.
+     *
+     * @param group The group object that is being saved.
+     * @return The group object is being returned.
+     */
+    @Override
+    public Group save(Group group) {
+        return groupRepository.save(group);
+    }
 
     /**
      * Find the group with the given id in the given tournament, or throw a ResourceNotFoundException if it doesn't exist.
@@ -62,6 +74,24 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public List<Match> getMatchesInGroup(Group group) {
         return group.getMatches();
+    }
+
+    /**
+     * Find the group that contains the match with the given id.
+     *
+     * @param tournament The tournament object that contains the groups
+     * @param matchId    The id of the match we want to find the group for.
+     * @return A group that contains a match with the given matchId.
+     */
+    @Override
+    public Group getGroupByMatchId(Tournament tournament, Long matchId) {
+        return tournament.getGroups()
+                .stream()
+                .filter(group -> group.getMatches()
+                        .stream()
+                        .anyMatch(match -> match.getId().equals(matchId)))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Group not found"));
     }
 
     /**
@@ -111,8 +141,8 @@ public class GroupServiceImpl implements GroupService {
                 .stream()
                 .filter(g -> !g.getId().equals(group.getId()))
                 .collect(Collectors.toList());
-        group.setTournament(null);
-        detachItemsFromGroup(group);
+//        group.setTournament(null);
+//        detachItemsFromGroup(group);
         groupRepository.delete(group);
         groups = reassignSymbols(groups);
         tournament.setGroups(groups);
@@ -134,7 +164,18 @@ public class GroupServiceImpl implements GroupService {
             if (group instanceof TeamBasedGroup) {
                 TeamBasedGroup teamBasedGroup = (TeamBasedGroup) group;
                 Team team = teamService.getById(teamId, teamBasedTournament);
-                teamBasedGroup.getTeams().add(team);
+                boolean isTeamInAnyGroup = teamBasedTournament.getGroups()
+                        .stream()
+                        .map(g -> (TeamBasedGroup) g)
+                        .anyMatch(g -> g.getTeams().stream().anyMatch(t -> t.getTeam().getId().equals(team.getId())));
+                if (isTeamInAnyGroup) throw new BadRequestException("Team is already in a group");
+                TeamGroupScore teamGroupScore = TeamGroupScore.builder()
+                        .team(team)
+                        .wins(0)
+                        .losses(0)
+                        .build();
+                teamGroupScore = groupScoreService.save(teamGroupScore);
+                teamBasedGroup.getTeams().add(teamGroupScore);
                 return groupRepository.save(teamBasedGroup);
             }
             throw new IncorrectGroupType("Incorrect group type! Should be team based.");
@@ -160,10 +201,16 @@ public class GroupServiceImpl implements GroupService {
                 boolean isParticipantInAnyGroup = playerBasedTournament
                         .getGroups()
                         .stream()
-                        .anyMatch(g -> ((PlayerBasedGroup) g).getParticipants().stream().anyMatch(p -> p.getId().equals(participantId)));
+                        .anyMatch(g -> ((PlayerBasedGroup) g).getParticipants().stream().anyMatch(p -> p.getParticipant().getId().equals(participantId)));
                 if (isParticipantInAnyGroup) throw new BadRequestException("Participant is already in a group");
                 Participant participant = participantService.getById(participantId, playerBasedTournament);
-                playerBasedGroup.getParticipants().add(participant);
+                PlayerGroupScore playerGroupScore = PlayerGroupScore.builder()
+                        .participant(participant)
+                        .wins(0)
+                        .losses(0)
+                        .build();
+                playerGroupScore = groupScoreService.save(playerGroupScore);
+                playerBasedGroup.getParticipants().add(playerGroupScore);
                 return groupRepository.save(playerBasedGroup);
             }
             throw new IncorrectGroupType("Incorrect group type! Should be participant based.");
@@ -189,10 +236,18 @@ public class GroupServiceImpl implements GroupService {
                 boolean isTeamInGroup = teamBasedGroup
                         .getTeams()
                         .stream()
-                        .anyMatch(team -> team.getId().equals(teamId));
+                        .anyMatch(team -> team.getTeam().getId().equals(teamId));
                 if (!isTeamInGroup) throw new BadRequestException("Team is not in the group");
+                boolean isGroupMatchAssociatedWithTeam = teamBasedGroup
+                        .getMatches()
+                        .stream()
+                        .filter(match -> match instanceof TeamVsMatch)
+                        .filter(match -> match.getStage().equals(Stage.GROUP_STAGE))
+                        .anyMatch(match -> ((TeamVsMatch) match).getRedTeam().getId().equals(teamId) || ((TeamVsMatch) match).getBlueTeam().getId().equals(teamId));
+                if (isGroupMatchAssociatedWithTeam)
+                    throw new BadRequestException("Team is associated with a match! Remove matches first before removing team from group.");
                 Team team = teamService.getById(teamId, teamBasedTournament);
-                teamBasedGroup.getTeams().removeIf(t -> t.getId().equals(team.getId()));
+                teamBasedGroup.getTeams().removeIf(t -> t.getTeam().getId().equals(team.getId()));
                 return groupRepository.save(teamBasedGroup);
             }
             throw new IncorrectGroupType("Incorrect group type! Should be team based.");
@@ -217,11 +272,19 @@ public class GroupServiceImpl implements GroupService {
                 boolean isParticipantInGroup = playerBasedGroup
                         .getParticipants()
                         .stream()
-                        .anyMatch(participant -> participant.getId().equals(participantId));
+                        .anyMatch(participant -> participant.getParticipant().getId().equals(participantId));
                 if (!isParticipantInGroup) throw new BadRequestException("Participant is not in the group");
+                boolean isParticipantAssociatedWithMatch = playerBasedGroup
+                        .getMatches()
+                        .stream()
+                        .filter(match -> match instanceof ParticipantVsMatch)
+                        .filter(match -> match.getStage().equals(Stage.GROUP_STAGE))
+                        .anyMatch(match -> ((ParticipantVsMatch) match).getRedParticipant().getId().equals(participantId) || ((ParticipantVsMatch) match).getBlueParticipant().getId().equals(participantId));
+                if (isParticipantAssociatedWithMatch)
+                    throw new BadRequestException("Participant is associated with a match! Remove matches first before removing participant from group.");
                 Participant participant = participantService.getById(participantId, playerBasedTournament);
                 playerBasedGroup.getParticipants()
-                        .removeIf(p -> p.getId().equals(participant.getId()));
+                        .removeIf(p -> p.getParticipant().getId().equals(participant.getId()));
                 return groupRepository.save(playerBasedGroup);
             }
             throw new IncorrectGroupType("Incorrect group type! Should be participant based.");
@@ -238,9 +301,99 @@ public class GroupServiceImpl implements GroupService {
      * @return A Group object
      */
     @Override
+    @Transactional
     public Group assignMatchToGroup(Tournament tournament, Group group, Match match) {
-        group.getMatches().add(match);
-        return groupRepository.save(group);
+        if (tournament instanceof TeamBasedTournament && group instanceof TeamBasedGroup && match instanceof TeamVsMatch) {
+            boolean areTeamsInGroup = this.areTeamsInGroup(group, ((TeamVsMatch) match).getRedTeam(), ((TeamVsMatch) match).getBlueTeam());
+            if (!areTeamsInGroup) throw new BadRequestException("One or both teams are not in the group!");
+            group.getMatches().add(match);
+            return groupRepository.save(group);
+        } else if (tournament instanceof PlayerBasedTournament && group instanceof PlayerBasedGroup && match instanceof ParticipantVsMatch) {
+            boolean areParticipantsInGroup = this.areParticipantsInGroup(group, ((ParticipantVsMatch) match).getRedParticipant(), ((ParticipantVsMatch) match).getBlueParticipant());
+            if (!areParticipantsInGroup)
+                throw new BadRequestException("One or both participants are not in the group!");
+            group.getMatches().add(match);
+            return groupRepository.save(group);
+        }
+        throw new BadRequestException("Incorrect match type for the group type");
+    }
+
+    /**
+     * If the group is a PlayerBasedGroup, return true if either participant is in the group, otherwise return false.
+     *
+     * @param group        The group to check if the participants are in.
+     * @param participant1 The first participant to check
+     * @param participant2 The second participant to check.
+     * @return Boolean
+     */
+    @Override
+    public Boolean areParticipantsInGroup(Group group, Participant participant1, Participant participant2) {
+        if (group instanceof PlayerBasedGroup) {
+            PlayerBasedGroup playerBasedGroup = (PlayerBasedGroup) group;
+            return playerBasedGroup.getParticipants()
+                    .stream()
+                    .anyMatch(p -> p.getParticipant().equals(participant1) || p.getParticipant().equals(participant2));
+        }
+        return false;
+    }
+
+    /**
+     * If the group is a TeamBasedGroup, then return true if either team1 or team2 is in the group.
+     *
+     * @param group The group to check if the teams are in.
+     * @param team1 The first team to check
+     * @param team2 The team that is being checked to see if it is in the group.
+     * @return Boolean
+     */
+    @Override
+    public Boolean areTeamsInGroup(Group group, Team team1, Team team2) {
+        if (group instanceof TeamBasedGroup) {
+            TeamBasedGroup teamBasedGroup = (TeamBasedGroup) group;
+            return teamBasedGroup.getTeams()
+                    .stream()
+                    .anyMatch(t -> t.getTeam().equals(team1))
+                    &&
+                    teamBasedGroup.getTeams()
+                            .stream()
+                            .anyMatch(t -> t.getTeam().equals(team2));
+        }
+        return false;
+    }
+
+    /**
+     * If the group is a PlayerBasedGroup, return true if the participant is in the group, otherwise return false.
+     *
+     * @param group       The group to check if the participant is in.
+     * @param participant The participant that you want to check if they are in the group.
+     * @return Boolean
+     */
+    @Override
+    public Boolean isParticipantInGroup(Group group, Participant participant) {
+        if (group instanceof PlayerBasedGroup) {
+            PlayerBasedGroup playerBasedGroup = (PlayerBasedGroup) group;
+            return playerBasedGroup.getParticipants()
+                    .stream()
+                    .anyMatch(p -> p.getParticipant().equals(participant));
+        }
+        return false;
+    }
+
+    /**
+     * If the group is a team based group, then return true if the team is in the group, otherwise return false.
+     *
+     * @param group The group to check if the team is in.
+     * @param team  The team to check if it's in the group
+     * @return A boolean value
+     */
+    @Override
+    public Boolean isTeamInGroup(Group group, Team team) {
+        if (group instanceof TeamBasedGroup) {
+            TeamBasedGroup teamBasedGroup = (TeamBasedGroup) group;
+            return teamBasedGroup.getTeams()
+                    .stream()
+                    .anyMatch(t -> t.getTeam().equals(team));
+        }
+        return false;
     }
 
     /**
@@ -290,6 +443,14 @@ public class GroupServiceImpl implements GroupService {
         return groupSymbol;
     }
 
+    /**
+     * If the group is a PlayerBasedGroup, then set the participants to an empty list and save the group. If the group is
+     * a TeamBasedGroup, then set the teams to an empty list and save the group. Otherwise, throw an IncorrectGroupType
+     * exception.
+     *
+     * @param group The group to detach items from.
+     * @return A group object.
+     */
     @Override
     public Group detachItemsFromGroup(Group group) {
         if (group instanceof PlayerBasedGroup) {
