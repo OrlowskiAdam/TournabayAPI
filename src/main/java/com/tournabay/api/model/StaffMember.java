@@ -1,6 +1,7 @@
 package com.tournabay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tournabay.api.model.qualifications.QualificationRoom;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +39,10 @@ public class StaffMember {
     @JsonIgnore
     @ManyToOne
     private Tournament tournament;
+
+    @JsonIgnore
+    @ManyToOne
+    private QualificationRoom qualificationRoom;
 
     @PrePersist
     private void prePersist() {
