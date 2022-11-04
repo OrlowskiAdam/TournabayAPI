@@ -59,6 +59,8 @@ spring:
             tokenUri: https://discordapp.com/api/oauth2/token
             userInfoUri: https://discordapp.com/api/users/@me
             usernameAttribute: id
+  banner:
+    location: banner.txt
 app:
   auth:
     tokenSecret: q4zerkIg2f2OYALd70CuqOKKpjL6eLOf0RIjtrvK
