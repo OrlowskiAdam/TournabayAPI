@@ -8,15 +8,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-public class UpdateMatchRequest {
+public abstract class UpdateMatchRequest {
     @NotNull(message = "Start date is required!")
     private LocalDateTime startDate;
     @NotNull(message = "'Is live' value cannot be null!")
     private Boolean isLive;
-    private Long redParticipantId;
-    private Long blueParticipantId;
-    private Long redTeamId;
-    private Long blueTeamId;
     private List<Long> refereesId;
     private List<Long> commentatorsId;
     private List<Long> streamersId;

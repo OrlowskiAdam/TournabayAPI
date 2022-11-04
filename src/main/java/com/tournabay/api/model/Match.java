@@ -1,6 +1,7 @@
 package com.tournabay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -54,19 +55,23 @@ public abstract class Match {
     @Min(value = 1, message = "Streamers limit must be greater than 0")
     private Integer streamersLimit;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     private Set<StaffMember> referees;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     private Set<StaffMember> commentators;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     private Set<StaffMember> streamers;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private MatchResult matchResult;
 
+    @NotNull(message = "Stage cannot be null")
+    private Stage stage;
+
     @ManyToOne
+    @JsonIgnore
     private Group group;
 
     @PrePersist

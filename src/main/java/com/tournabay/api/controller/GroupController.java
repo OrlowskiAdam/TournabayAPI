@@ -10,6 +10,7 @@ import com.tournabay.api.service.MatchService;
 import com.tournabay.api.service.TournamentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class GroupController {
      * @return A group object
      */
     @GetMapping("/{groupId}/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
     public ResponseEntity<Group> getGroupById(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -45,6 +47,7 @@ public class GroupController {
      * @return A list of groups
      */
     @GetMapping("/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
     public ResponseEntity<List<Group>> getGroupsByTournamentId(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         List<Group> groups = groupService.findAll(tournament);
@@ -60,6 +63,7 @@ public class GroupController {
      * @return A list of matches in a group
      */
     @GetMapping("/{groupId}/tournament/{tournamentId}/matches")
+    @Secured("ROLE_USER")
     public ResponseEntity<List<Match>> getMatchesInGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -75,6 +79,7 @@ public class GroupController {
      * @return A group object
      */
     @PostMapping("/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
     public ResponseEntity<Group> createGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.createGroup(tournament);
@@ -90,6 +95,7 @@ public class GroupController {
      * @return A group object
      */
     @DeleteMapping("/{groupId}/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
     public ResponseEntity<List<Group>> deleteGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -107,6 +113,7 @@ public class GroupController {
      * @return A group object with the team assigned to it.
      */
     @PostMapping("/{groupId}/tournament/{tournamentId}/team/{teamId}")
+    @Secured("ROLE_USER")
     public ResponseEntity<Group> assignTeamToGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long teamId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -124,6 +131,7 @@ public class GroupController {
      * @return A group object
      */
     @PostMapping("/{groupId}/tournament/{tournamentId}/participant/{participantId}")
+    @Secured("ROLE_USER")
     public ResponseEntity<Group> assignParticipantToGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long participantId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -141,6 +149,7 @@ public class GroupController {
      * @return A group object
      */
     @DeleteMapping("/{groupId}/tournament/{tournamentId}/team/{teamId}")
+    @Secured("ROLE_USER")
     public ResponseEntity<Group> removeTeamFromGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long teamId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -158,6 +167,7 @@ public class GroupController {
      * @return A group object
      */
     @DeleteMapping("/{groupId}/tournament/{tournamentId}/participant/{participantId}")
+    @Secured("ROLE_USER")
     public ResponseEntity<Group> removeParticipantFromGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long participantId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -175,9 +185,10 @@ public class GroupController {
      * @return A group object with the match assigned to it.
      */
     @PostMapping("/{groupId}/tournament/{tournamentId}/match/{matchId}")
+    @Secured("ROLE_USER")
     public ResponseEntity<Group> assignMatchToGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long matchId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        Match match = matchService.getById(matchId, tournament);
+        Match match = matchService.findById(tournament, matchId);
         Group group = groupService.findById(tournament, groupId);
         group = groupService.assignMatchToGroup(tournament, group, match);
         return ResponseEntity.ok(group);
@@ -193,9 +204,10 @@ public class GroupController {
      * @return A group object
      */
     @PostMapping("/{groupId}/tournament/{tournamentId}/match/{matchId}/exclude")
+    @Secured("ROLE_USER")
     public ResponseEntity<Group> excludeMatchFromGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long matchId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        Match match = matchService.getById(matchId, tournament);
+        Match match = matchService.findById(tournament, matchId);
         Group group = groupService.findById(tournament, groupId);
         group = groupService.excludeMatchFromGroup(tournament, group, match);
         return ResponseEntity.ok(group);

@@ -18,5 +18,5 @@ import java.util.List;
 public class TeamBasedGroup extends Group {
 
     @OneToMany
-    private List<Team> teams;
+    private List<TeamGroupScore> teams;
 }
