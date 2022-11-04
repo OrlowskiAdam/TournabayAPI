@@ -26,7 +26,7 @@ public abstract class Group {
     @NotNull
     private Character symbol;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "group", orphanRemoval = true, cascade = {CascadeType.ALL})
     private List<Match> matches;
 
     @JsonIgnore

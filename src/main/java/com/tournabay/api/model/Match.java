@@ -66,6 +66,9 @@ public abstract class Match {
     @OneToOne
     private MatchResult matchResult;
 
+    @ManyToOne
+    private Group group;
+
     @PrePersist
     @PreUpdate
     private void preSave() {
