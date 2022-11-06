@@ -1,7 +1,6 @@
 package com.tournabay.api.model.qualifications;
 
-import com.tournabay.api.model.StaffMember;
-import com.tournabay.api.model.Team;
+import com.tournabay.api.model.Participant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,8 +16,8 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-public class TeamBasedQualificationRoom extends QualificationRoom {
+public class PlayerBasedQualificationRoom extends QualificationRoom {
 
     @OneToMany(mappedBy = "qualificationRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Team> teams;
+    private List<Participant> participants;
 }
