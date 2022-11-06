@@ -1,6 +1,7 @@
 package com.tournabay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.tournabay.api.model.qualifications.QualificationRoom;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -91,6 +92,9 @@ public abstract class Tournament {
 
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Group> groups = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QualificationRoom> qualificationRooms = new ArrayList<>();
 
     @PrePersist
     private void onPrePersist() {

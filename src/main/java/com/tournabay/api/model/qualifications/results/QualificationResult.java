@@ -1,5 +1,6 @@
-package com.tournabay.api.model.qualifications.result;
+package com.tournabay.api.model.qualifications.results;
 
+import com.tournabay.api.model.qualifications.QualificationRoom;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +15,14 @@ import javax.persistence.*;
 @Getter
 @Setter
 @SuperBuilder
-public class QualificationResult {
+public abstract class QualificationResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private Double totalScore;
+
+    @ManyToOne
+    private QualificationRoom qualificationRoom;
 
 }

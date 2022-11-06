@@ -1,12 +1,16 @@
 package com.tournabay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.tournabay.api.model.qualifications.TeamBasedQualificationRoom;
+import com.tournabay.api.model.qualifications.results.TeamQualificationResult;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -35,6 +39,14 @@ public class Team {
 
     @OneToOne
     private Participant captain;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeamQualificationResult> teamQualificationResult;
+
+    @JsonIgnore
+    @ManyToOne
+    private TeamBasedQualificationRoom qualificationRoom;
 
     @JsonIdentityInfo(
             generator = ObjectIdGenerators.PropertyGenerator.class,

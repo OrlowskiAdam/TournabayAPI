@@ -1,7 +1,8 @@
 package com.tournabay.api.model.qualifications;
 
 import com.tournabay.api.model.StaffMember;
-import com.tournabay.api.model.qualifications.result.QualificationResult;
+import com.tournabay.api.model.Tournament;
+import com.tournabay.api.model.qualifications.results.QualificationResult;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,12 +24,17 @@ public class QualificationRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    LocalDateTime startTime;
+    private LocalDateTime startTime;
+
+    private Character symbol;
 
     @OneToMany(mappedBy = "qualificationRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<StaffMember> staffMembers;
+    private List<StaffMember> staffMembers;
 
-    @OneToOne(mappedBy = "qualificationRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    QualificationResult qualificationResult;
+    @OneToMany(mappedBy = "qualificationRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QualificationResult> qualificationResults;
+
+    @ManyToOne
+    private Tournament tournament;
 
 }

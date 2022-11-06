@@ -1,7 +1,10 @@
 package com.tournabay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.tournabay.api.model.qualifications.PlayerBasedQualificationRoom;
+import com.tournabay.api.model.qualifications.TeamBasedQualificationRoom;
 import lombok.*;
 
 import javax.persistence.*;
@@ -42,6 +45,10 @@ public class Participant {
     )
     @ManyToOne
     private Team team;
+
+    @JsonIgnore
+    @ManyToOne
+    private PlayerBasedQualificationRoom qualificationRoom;
 
     @JsonIdentityInfo(
             generator = ObjectIdGenerators.PropertyGenerator.class,
