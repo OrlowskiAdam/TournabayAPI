@@ -20,6 +20,13 @@ public interface OsuApi {
     @GET("beatmaps/{beatmap}")
     Call<OsuBeatmap> getBeatmap(@Path("beatmap") Long beatmapId);
 
+    /**
+     * Get the difficulty attributes of a beatmap.
+     *
+     * @param beatmapId The beatmap ID of the beatmap you want to get the attributes of.
+     * @param body The body of the request.
+     * @return A BeatmapDifficultyAttributesWrapper object.
+     */
     @POST("beatmaps/{beatmap}/attributes")
     Call<BeatmapDifficultyAttributesWrapper> getBeatmapAttributes(@Path("beatmap") Long beatmapId, @Body BeatmapAttributesBody body);
 }
