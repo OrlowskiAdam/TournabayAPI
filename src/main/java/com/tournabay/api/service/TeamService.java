@@ -2,6 +2,7 @@ package com.tournabay.api.service;
 
 import com.tournabay.api.exception.AppException;
 import com.tournabay.api.exception.BadRequestException;
+import com.tournabay.api.exception.IncorrectTournamentType;
 import com.tournabay.api.exception.ResourceNotFoundException;
 import com.tournabay.api.model.*;
 import com.tournabay.api.repository.TeamRepository;
@@ -122,6 +123,24 @@ public class TeamService {
             return teamRepository.findById(teamId).orElseThrow(() -> new ResourceNotFoundException("Team not found!"));
         }
         throw new BadRequestException("Invalid tournament type!");
+    }
+
+    /**
+     * If the tournament is a team based tournament, return a list of teams that are in the tournament and have an id that
+     * is in the list of team ids.
+     *
+     * @param teamIds    A list of team ids
+     * @param tournament The tournament to get the teams from.
+     * @return A list of teams
+     */
+    public List<Team> getAllByIds(List<Long> teamIds, Tournament tournament) {
+        if (tournament instanceof TeamBasedTournament) {
+            return ((TeamBasedTournament) tournament).getTeams()
+                    .stream()
+                    .filter(team -> teamIds.contains(team.getId()))
+                    .collect(Collectors.toList());
+        }
+        throw new IncorrectTournamentType("Invalid tournament type!");
     }
 
     /**

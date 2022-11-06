@@ -152,13 +152,6 @@ public class MatchServiceImpl implements MatchService {
             Group group = groupService.getGroupByMatchId(tournament, match.getId());
             groupService.excludeMatchFromGroup(tournament, group, match);
         }
-//        if (match instanceof TeamVsMatch) {
-//            TeamVsMatch teamVsMatch = (TeamVsMatch) match;
-//            teamVsMatch.setTournament(null);
-//        } else if (match instanceof ParticipantVsMatch) {
-//            ParticipantVsMatch participantVsMatch = (ParticipantVsMatch) match;
-//            participantVsMatch.setTournament(null);
-//        }
         matchRepository.delete(match);
         return match;
     }
