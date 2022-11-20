@@ -41,10 +41,6 @@ public class ParticipantService {
 
     /**
      * Get the participant with the given osuId from the given tournament, or create a new one if it doesn't exist.
-     * <p>
-     * The first thing we do is get the participants from the tournament. Then we filter the
-     * participants by the given osuId. Then we use findFirst() method to get the first participant that
-     * matches the filter. If there is no participant that matches the filter, we create a new one
      *
      * @param osuId      The osuId of the user you want to get the participant of.
      * @param tournament The tournament that the participant is in
@@ -57,6 +53,22 @@ public class ParticipantService {
                 .filter(participant -> participant.getUser().getOsuId().equals(osuId))
                 .findFirst()
                 .orElse(createParticipantFromOsuId(osuId, tournament));
+    }
+
+    /**
+     * Get the participant with the given osuId from the given tournament, or null if there is no such participant.
+     *
+     * @param osuId The osuId of the user you want to get the participant of.
+     * @param tournament The tournament to search in
+     * @return A participant object
+     */
+    public Participant getByOsuIdOrNull(Long osuId, Tournament tournament) {
+        return tournament
+                .getParticipants()
+                .stream()
+                .filter(participant -> participant.getUser().getOsuId().equals(osuId))
+                .findFirst()
+                .orElse(null);
     }
 
     /**

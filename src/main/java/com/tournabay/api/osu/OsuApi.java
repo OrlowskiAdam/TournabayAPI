@@ -2,6 +2,7 @@ package com.tournabay.api.osu;
 
 import com.tournabay.api.osu.model.BeatmapAttributesBody;
 import com.tournabay.api.osu.model.BeatmapDifficultyAttributesWrapper;
+import com.tournabay.api.osu.model.MultiplayerLobbyData;
 import com.tournabay.api.osu.model.OsuBeatmap;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -29,4 +30,7 @@ public interface OsuApi {
      */
     @POST("beatmaps/{beatmap}/attributes")
     Call<BeatmapDifficultyAttributesWrapper> getBeatmapAttributes(@Path("beatmap") Long beatmapId, @Body BeatmapAttributesBody body);
+
+    @GET("matches/{lobbyId}")
+    Call<MultiplayerLobbyData> getLobbyData(@Path("lobbyId") Long lobbyId);
 }

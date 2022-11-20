@@ -1,16 +1,14 @@
 package com.tournabay.api.controller;
 
 import com.tournabay.api.model.*;
+import com.tournabay.api.model.beatmap.Beatmap;
 import com.tournabay.api.payload.AddBeatmapToMappool;
 import com.tournabay.api.security.CurrentUser;
 import com.tournabay.api.security.UserPrincipal;
 import com.tournabay.api.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,6 +21,14 @@ public class BeatmapController {
     private final MappoolService mappoolService;
     private final UserService userService;
     private final BeatmapModificationService beatmapModificationService;
+
+    @GetMapping("/qualifiers/tournament/{tournamentId}")
+    public ResponseEntity<List<Beatmap>> getQualificationBeatmaps(@PathVariable Long tournamentId) {
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        Mappool mappool = mappoolService.findByStage(tournament, Stage.QUALIFIER);
+        List<Beatmap> beatmaps = beatmapService.getBeatmapsInMappool(mappool);
+        return ResponseEntity.ok(beatmaps);
+    }
 
 //    @PostMapping("/create")
 //    public ResponseEntity<List<BeatmapModification>> createBeatmap(@CurrentUser UserPrincipal userPrincipal, @RequestBody AddBeatmapToMappool body) {

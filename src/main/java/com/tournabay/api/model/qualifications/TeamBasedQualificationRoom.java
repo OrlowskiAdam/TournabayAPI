@@ -1,7 +1,7 @@
 package com.tournabay.api.model.qualifications;
 
-import com.tournabay.api.model.StaffMember;
 import com.tournabay.api.model.Team;
+import com.tournabay.api.model.qualifications.results.TeamBasedQualificationResult;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

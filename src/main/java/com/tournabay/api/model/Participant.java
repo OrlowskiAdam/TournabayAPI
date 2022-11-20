@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.tournabay.api.model.qualifications.PlayerBasedQualificationRoom;
-import com.tournabay.api.model.qualifications.TeamBasedQualificationRoom;
 import lombok.*;
 
 import javax.persistence.*;

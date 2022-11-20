@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/qualification-room")
@@ -38,7 +40,7 @@ public class QualificationRoomController {
             @RequestBody CreateQualificationRoomRequest body
     ) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
-        QualificationRoom qualificationRoom = qualificationRoomService.createQualificationRoom(body.getStartTime(), tournament);
+        QualificationRoom qualificationRoom = qualificationRoomService.createQualificationRoom(body.getStartDate(), tournament);
         return ResponseEntity.ok(qualificationRoom);
     }
 
@@ -56,15 +58,16 @@ public class QualificationRoomController {
     }
 
     @DeleteMapping("/remove/{qualificationRoomId}/tournament/{tournamentId}")
-    public ResponseEntity<QualificationRoom> removeQualificationRoom(
+    public ResponseEntity<List<QualificationRoom>> removeQualificationRoom(
             @CurrentUser UserPrincipal userPrincipal,
             @PathVariable Long qualificationRoomId,
             @PathVariable Long tournamentId
     ) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         QualificationRoom qualificationRoom = qualificationRoomService.getQualificationRoom(qualificationRoomId, tournament);
-        qualificationRoom = qualificationRoomService.removeQualificationRoom(qualificationRoom, tournament);
-        return ResponseEntity.ok(qualificationRoom);
+        qualificationRoomService.removeQualificationRoom(qualificationRoom, tournament);
+        List<QualificationRoom> qualificationRooms = qualificationRoomService.reassignSymbols(tournament.getQualificationRooms());
+        return ResponseEntity.ok(qualificationRooms);
     }
 
     @PutMapping("/add-staff-member/{qualificationRoomId}/tournament/{tournamentId}")

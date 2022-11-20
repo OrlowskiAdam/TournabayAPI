@@ -2,6 +2,7 @@ package com.tournabay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tournabay.api.model.qualifications.QualificationRoom;
+import com.tournabay.api.model.qualifications.results.QualificationResult;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +15,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -95,6 +95,9 @@ public abstract class Tournament {
 
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QualificationRoom> qualificationRooms = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QualificationResult> qualificationResults = new ArrayList<>();
 
     @PrePersist
     private void onPrePersist() {

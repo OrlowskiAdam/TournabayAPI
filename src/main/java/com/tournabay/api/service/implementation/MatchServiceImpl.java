@@ -52,6 +52,9 @@ public class MatchServiceImpl implements MatchService {
     @Override
     @Transactional
     public Match createPlayerVsMatch(Tournament tournament, CreatePlayerVsMatchRequest createMatchRequest) {
+        if (createMatchRequest.getRedParticipantId() == null || createMatchRequest.getBlueParticipantId() == null) {
+            throw new BadRequestException("Red and blue participant must be provided!");
+        }
         if (createMatchRequest.getRedParticipantId().equals(createMatchRequest.getBlueParticipantId()))
             throw new BadRequestException("Red and blue participant cannot be the same!");
         if (tournament instanceof TeamBasedTournament) throw new IncorrectTournamentType("Incorrect tournament type!");
@@ -85,6 +88,9 @@ public class MatchServiceImpl implements MatchService {
     @Override
     @Transactional
     public Match createTeamVsMatch(Tournament tournament, CreateTeamVsMatchRequest createMatchRequest) {
+        if (createMatchRequest.getRedTeamId() == null || createMatchRequest.getBlueTeamId() == null) {
+            throw new BadRequestException("Red and blue team must be provided!");
+        }
         if (createMatchRequest.getRedTeamId().equals(createMatchRequest.getBlueTeamId()))
             throw new BadRequestException("Red team and blue team can't be the same!");
         if (tournament instanceof PlayerBasedTournament)

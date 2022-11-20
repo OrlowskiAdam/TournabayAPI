@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +45,20 @@ public class BeatmapService {
     public Beatmap findByBeatmapModificationId(Long beatmapModificationId) {
         return beatmapRepository.findByBeatmapModificationId(beatmapModificationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Beatmap not found"));
+    }
+
+    public Beatmap findByBeatmapsetIdInList(Long beatmapsetId, List<Beatmap> beatmaps) {
+        return beatmaps.stream()
+                .filter(beatmap -> beatmap.getBeatmapsetId().equals(beatmapsetId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<Beatmap> getBeatmapsInMappool(Mappool mappool) {
+        if (mappool.getIsReleased() == null || !mappool.getIsReleased()) throw new BadRequestException("Mappool is not released yet");
+        return mappool.getBeatmapModifications().stream()
+                .flatMap(beatmapModification -> beatmapModification.getBeatmaps().stream())
+                .collect(Collectors.toList());
     }
 
     /**

@@ -1,9 +1,6 @@
 package com.tournabay.api.osu;
 
-import com.tournabay.api.osu.model.BeatmapAttributesBody;
-import com.tournabay.api.osu.model.BeatmapDifficultyAttributes;
-import com.tournabay.api.osu.model.BeatmapDifficultyAttributesWrapper;
-import com.tournabay.api.osu.model.OsuBeatmap;
+import com.tournabay.api.osu.model.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import okhttp3.OkHttpClient;
@@ -62,5 +59,10 @@ public class OsuApiClient implements RestClient, Closeable {
     @Override
     public Optional<BeatmapDifficultyAttributesWrapper> getBeatmapAttributes(Long beatmapId, BeatmapAttributesBody body) throws IOException {
         return Optional.ofNullable(this.osuApi.getBeatmapAttributes(beatmapId, body).execute().body());
+    }
+
+    @Override
+    public Optional<MultiplayerLobbyData> getMatchData(Long lobbyId) throws IOException {
+        return Optional.ofNullable(this.osuApi.getLobbyData(lobbyId).execute().body());
     }
 }

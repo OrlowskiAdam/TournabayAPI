@@ -1,9 +1,6 @@
 package com.tournabay.api.service;
 
-import com.tournabay.api.model.Participant;
-import com.tournabay.api.model.StaffMember;
-import com.tournabay.api.model.Team;
-import com.tournabay.api.model.Tournament;
+import com.tournabay.api.model.*;
 import com.tournabay.api.model.qualifications.QualificationRoom;
 import com.tournabay.api.model.qualifications.results.QualificationResult;
 import com.tournabay.api.payload.UpdateQualificationRoomRequest;
@@ -120,5 +117,14 @@ public interface QualificationRoomService {
      * @return A new symbol is being returned.
      */
     Character getNewSymbol(Tournament tournament);
+
+    /**
+     * Given a list of groups of students, return a list of groups of students with the same number of students in each
+     * group
+     *
+     * @param rooms A list of QualificationRoom objects.
+     * @return A list of QualificationRoom objects.
+     */
+    List<QualificationRoom> reassignSymbols(List<QualificationRoom> rooms);
 
 }

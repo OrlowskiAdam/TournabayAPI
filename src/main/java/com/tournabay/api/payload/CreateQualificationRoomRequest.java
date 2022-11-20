@@ -6,5 +6,5 @@ import java.time.LocalDateTime;
 
 @Getter
 public class CreateQualificationRoomRequest {
-    private LocalDateTime startTime;
+    private LocalDateTime startDate;
 }

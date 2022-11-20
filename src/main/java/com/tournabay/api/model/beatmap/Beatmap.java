@@ -1,6 +1,7 @@
 package com.tournabay.api.model.beatmap;
 
 import com.tournabay.api.model.BeatmapModification;
+import com.tournabay.api.model.Modification;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,6 +38,8 @@ public class Beatmap {
     private String listCover;
     private String slimCover;
 
+    private Modification modification;
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnore
     private BeatmapModification beatmapModification;
@@ -44,5 +47,12 @@ public class Beatmap {
     @PreRemove
     public void preRemove() {
         beatmapModification.getBeatmaps().remove(this);
+    }
+
+    @PostLoad
+    public void postLoad() {
+        if (beatmapModification != null) {
+            modification = beatmapModification.getModification();
+        }
     }
 }

@@ -44,6 +44,22 @@ public class MappoolService {
     }
 
     /**
+     * Find all mappools for a tournament, filter them by stage, and return the first one that matches, or throw an
+     * exception if none are found.
+     *
+     * @param tournament The tournament you want to find the mappool for.
+     * @param stage The stage of the tournament.
+     * @return A Mappool object
+     */
+    public Mappool findByStage(Tournament tournament, Stage stage) {
+        return this.findAllByTournament(tournament)
+                .stream()
+                .filter(mappool -> mappool.getStage().equals(stage))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Mappool for " + stage.name() + " not found"));
+    }
+
+    /**
      * Find a mappool by its id, or throw an exception if it doesn't exist.
      *
      * @param mappoolId The id of the mappool you want to find.
@@ -89,6 +105,7 @@ public class MappoolService {
         Mappool mappool = Mappool.builder()
                 .tournament(tournament)
                 .stage(stage)
+                .isReleased(false)
                 .beatmapModifications(beatmapModificationService.createDefaultBeatmapModifications())
                 .name(name)
                 .build();

@@ -1,5 +1,6 @@
 package com.tournabay.api.model.qualifications;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tournabay.api.model.StaffMember;
 import com.tournabay.api.model.Tournament;
 import com.tournabay.api.model.qualifications.results.QualificationResult;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,17 +26,19 @@ public class QualificationRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime startTime;
+    @NotNull
+    private LocalDateTime startDate;
 
     private Character symbol;
 
-    @OneToMany(mappedBy = "qualificationRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "qualificationRoom", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
     private List<StaffMember> staffMembers;
 
-    @OneToMany(mappedBy = "qualificationRoom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<QualificationResult> qualificationResults;
-
+    @JsonIgnore
     @ManyToOne
     private Tournament tournament;
+
+    @OneToMany(mappedBy = "qualificationRoom", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
+    private List<QualificationResult> results;
 
 }

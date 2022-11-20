@@ -31,15 +31,15 @@ public class QualificationRoomServiceImpl implements QualificationRoomService {
     private final ParticipantService participantService;
 
     @Override
-    public QualificationRoom createQualificationRoom(LocalDateTime startTime, Tournament tournament) {
+    public QualificationRoom createQualificationRoom(LocalDateTime startDate, Tournament tournament) {
         Character symbol = this.getNewSymbol(tournament);
         if (tournament instanceof PlayerBasedTournament) {
             PlayerBasedTournament playerBasedTournament = (PlayerBasedTournament) tournament;
             QualificationRoom qualificationRoom = PlayerBasedQualificationRoom.builder()
-                    .startTime(startTime)
+                    .startDate(startDate)
                     .symbol(symbol)
                     .staffMembers(new ArrayList<>())
-                    .qualificationResults(new ArrayList<>())
+                    .results(new ArrayList<>())
                     .participants(new ArrayList<>())
                     .tournament(playerBasedTournament)
                     .build();
@@ -47,10 +47,10 @@ public class QualificationRoomServiceImpl implements QualificationRoomService {
         } else if (tournament instanceof TeamBasedTournament) {
             TeamBasedTournament teamBasedTournament = (TeamBasedTournament) tournament;
             QualificationRoom qualificationRoom = TeamBasedQualificationRoom.builder()
-                    .startTime(startTime)
+                    .startDate(startDate)
                     .symbol(symbol)
                     .staffMembers(new ArrayList<>())
-                    .qualificationResults(new ArrayList<>())
+                    .results(new ArrayList<>())
                     .teams(new ArrayList<>())
                     .tournament(teamBasedTournament)
                     .build();
@@ -63,7 +63,17 @@ public class QualificationRoomServiceImpl implements QualificationRoomService {
     public QualificationRoom removeQualificationRoom(QualificationRoom qualificationRoom, Tournament tournament) {
         tournament.getQualificationRooms().remove(qualificationRoom);
         qualificationRoom.setTournament(null);
-        tournamentService.save(tournament);
+        qualificationRoom.getStaffMembers().forEach(staffMember -> staffMember.setQualificationRoom(null));
+        qualificationRoom.getStaffMembers().clear();
+        if (qualificationRoom instanceof TeamBasedQualificationRoom) {
+            TeamBasedQualificationRoom teamBasedQualificationRoom = (TeamBasedQualificationRoom) qualificationRoom;
+            teamBasedQualificationRoom.getTeams().forEach(team -> team.setQualificationRoom(null));
+            teamBasedQualificationRoom.setTeams(null);
+        } else if (qualificationRoom instanceof PlayerBasedQualificationRoom) {
+            PlayerBasedQualificationRoom playerBasedQualificationRoom = (PlayerBasedQualificationRoom) qualificationRoom;
+            playerBasedQualificationRoom.getParticipants().forEach(participant -> participant.setQualificationRoom(null));
+            playerBasedQualificationRoom.setParticipants(null);
+        }
         qualificationRoomRepository.delete(qualificationRoom);
         return qualificationRoom;
     }
@@ -103,12 +113,18 @@ public class QualificationRoomServiceImpl implements QualificationRoomService {
                 throw new BadRequestException("One or more teams are already in another qualification room!");
             List<StaffMember> staffMembers = staffMemberService.getStaffMembersById(updateTeamBasedQualificationRoomRequest.getStaffMemberIds(), tournament);
             TeamBasedQualificationRoom teamBasedQualificationRoom = (TeamBasedQualificationRoom) qualificationRoom;
-            teamBasedQualificationRoom.setStartTime(updateTeamBasedQualificationRoomRequest.getStartTime());
-            teamBasedQualificationRoom.setTeams(teams);
-            teamBasedQualificationRoom.setStaffMembers(staffMembers);
-            return qualificationRoomRepository.save(teamBasedQualificationRoom);
+            teamBasedQualificationRoom.setStartDate(updateTeamBasedQualificationRoomRequest.getStartDate());
+            teamBasedQualificationRoom.getStaffMembers().forEach(staffMember -> staffMember.setQualificationRoom(null));
+            teamBasedQualificationRoom.getTeams().forEach(team -> team.setQualificationRoom(null));
+            teams.forEach(team -> team.setQualificationRoom(teamBasedQualificationRoom));
+            staffMembers.forEach(staffMember -> staffMember.setQualificationRoom(teamBasedQualificationRoom));
+            TeamBasedQualificationRoom savedQualificationRoom = qualificationRoomRepository.save(teamBasedQualificationRoom);
+            savedQualificationRoom.setTeams(teams);
+            savedQualificationRoom.setStaffMembers(staffMembers);
+            return savedQualificationRoom;
         } else if (tournament instanceof PlayerBasedTournament &&
-                qualificationRoom instanceof PlayerBasedQualificationRoom
+                qualificationRoom instanceof PlayerBasedQualificationRoom &&
+                request instanceof UpdatePlayerBasedQualificationRoomRequest
         ) {
             UpdatePlayerBasedQualificationRoomRequest updatePlayerBasedQualificationRoomRequest =
                     (UpdatePlayerBasedQualificationRoomRequest) request;
@@ -119,10 +135,13 @@ public class QualificationRoomServiceImpl implements QualificationRoomService {
                 throw new BadRequestException("One or more participants are already in another qualification room!");
             List<StaffMember> staffMembers = staffMemberService.getStaffMembersById(updatePlayerBasedQualificationRoomRequest.getStaffMemberIds(), tournament);
             PlayerBasedQualificationRoom playerBasedQualificationRoom = (PlayerBasedQualificationRoom) qualificationRoom;
-            playerBasedQualificationRoom.setStartTime(request.getStartTime());
-            playerBasedQualificationRoom.setParticipants(participants);
-            playerBasedQualificationRoom.setStaffMembers(staffMembers);
-            return qualificationRoomRepository.save(playerBasedQualificationRoom);
+            playerBasedQualificationRoom.setStartDate(request.getStartDate());
+            participants.forEach(participant -> participant.setQualificationRoom(playerBasedQualificationRoom));
+            staffMembers.forEach(staffMember -> staffMember.setQualificationRoom(playerBasedQualificationRoom));
+            PlayerBasedQualificationRoom savedQualificationRoom = qualificationRoomRepository.save(playerBasedQualificationRoom);
+            savedQualificationRoom.setParticipants(participants);
+            savedQualificationRoom.setStaffMembers(staffMembers);
+            return savedQualificationRoom;
         }
         throw new BadRequestException("The request is not valid!");
     }
@@ -178,11 +197,7 @@ public class QualificationRoomServiceImpl implements QualificationRoomService {
 
     @Override
     public QualificationRoom removeResult(QualificationRoom qualificationRoom, QualificationResult qualificationResult) {
-        qualificationRoom.getQualificationResults().remove(qualificationResult);
-        qualificationResult.setQualificationRoom(null);
-        QualificationRoom savedQualificationRoom = qualificationRoomRepository.save(qualificationRoom);
-        qualificationResultRepository.delete(qualificationResult);
-        return savedQualificationRoom;
+        throw new NotYetImplementedException();
     }
 
     @Override
@@ -195,6 +210,16 @@ public class QualificationRoomServiceImpl implements QualificationRoomService {
             }
         }
         return roomSymbol;
+    }
+
+    @Override
+    public List<QualificationRoom> reassignSymbols(List<QualificationRoom> rooms) {
+        Character symbol = 'A';
+        for (QualificationRoom room : rooms) {
+            room.setSymbol(symbol);
+            symbol++;
+        }
+        return qualificationRoomRepository.saveAll(rooms);
     }
 
 }

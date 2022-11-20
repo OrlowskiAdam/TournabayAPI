@@ -1,9 +1,9 @@
 package com.tournabay.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -44,18 +44,6 @@ public class User {
         this.pmFriendsOnly = pmFriendsOnly;
         this.isBot = isBot;
         this.osuToken = osuToken;
-        this.provider = provider;
-        this.roles = roles;
-    }
-
-    public User(
-            String discordId,
-            @NotNull AuthProvider provider,
-            Set<Role> roles
-    ) {
-        this.username = "DiscordVerificationUser";
-        this.osuId = -2L;
-        this.discordId = discordId;
         this.provider = provider;
         this.roles = roles;
     }

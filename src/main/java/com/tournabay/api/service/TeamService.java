@@ -187,6 +187,30 @@ public class TeamService {
     }
 
     /**
+     * If the tournament is a team based tournament, then return the team that has a participant with the given user id,
+     * otherwise throw a bad request exception.
+     *
+     * @param id The id of the user that we want to find the team for.
+     * @param tournament The tournament object that we want to get the team from.
+     * @return A team
+     */
+    public Team getTeamByParticipantOsuIdWithoutThrow(Long id, Tournament tournament) {
+        if (tournament instanceof TeamBasedTournament) {
+            TeamBasedTournament teamBasedTournament = (TeamBasedTournament) tournament;
+            return teamBasedTournament.getTeams()
+                    .stream()
+                    .filter(team -> team.getParticipants()
+                            .stream()
+                            .anyMatch(participant -> participant.getUser().getOsuId().equals(id))
+                            ||
+                            team.getCaptain().getUser().getOsuId().equals(id))
+                    .findFirst()
+                    .orElse(null);
+        }
+        throw new BadRequestException("Invalid tournament type!");
+    }
+
+    /**
      * Check if any of the participants in the list of participants are already in the tournament's team
      *
      * @param participants The list of participants that are being added to the team.

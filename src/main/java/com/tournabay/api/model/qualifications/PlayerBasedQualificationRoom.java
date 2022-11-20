@@ -1,6 +1,7 @@
 package com.tournabay.api.model.qualifications;
 
 import com.tournabay.api.model.Participant;
+import com.tournabay.api.model.qualifications.results.PlayerBasedQualificationResult;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
