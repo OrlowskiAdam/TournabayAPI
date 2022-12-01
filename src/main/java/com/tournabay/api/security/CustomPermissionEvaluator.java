@@ -36,8 +36,8 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
      * to perform the action, then the user has permission to perform the action
      *
      * @param auth         The Authentication object that Spring Security uses to store the user's credentials.
-     * @param tournamentId The id of the tournament you want to check permissions for
-     * @param permission   The permission to check for. This is the name of the method in the Permission class.
+     * @param tournamentId The id of the tournament that the user is trying to access.
+     * @param permission   The permission name, as defined in the TournamentPermission enum.
      * @return A boolean value.
      */
     private boolean hasTournamentPermission(Authentication auth, Long tournamentId, String permission) {
