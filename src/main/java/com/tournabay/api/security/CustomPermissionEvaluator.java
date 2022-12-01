@@ -40,7 +40,6 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
      * @param permission   The permission to check for. This is the name of the method in the Permission class.
      * @return A boolean value.
      */
-    @SuppressWarnings("unchecked")
     private boolean hasTournamentPermission(Authentication auth, Long tournamentId, String permission) {
         if (!(auth.getPrincipal() instanceof UserPrincipal)) return false;
         UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
