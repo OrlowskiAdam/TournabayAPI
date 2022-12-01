@@ -87,8 +87,8 @@ public abstract class Tournament {
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Participant> participants = new ArrayList<>();
 
-    @OneToOne(mappedBy = "tournament", cascade = CascadeType.ALL)
-    private Permission permission;
+    @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Permission> permissions;
 
     @OneToMany(mappedBy = "tournament", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Group> groups = new ArrayList<>();
