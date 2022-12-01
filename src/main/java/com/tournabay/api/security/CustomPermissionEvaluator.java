@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -44,30 +43,32 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
      */
     @SuppressWarnings("unchecked")
     private boolean hasTournamentPermission(Authentication auth, Long tournamentId, String permission) {
-        try {
-            if (!(auth.getPrincipal() instanceof UserPrincipal)) return false;
-            UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
-            User user = userService.getUserFromPrincipal(userPrincipal);
-            Tournament tournament = tournamentService.getTournamentById(tournamentId);
-            if (tournament.getOwner().equals(user)) return true;
-            Permission tournamentPermission = tournament.getPermission();
-            Method tournamentRoleAccessMethod = tournamentPermission.getClass().getMethod("getCanTournamentRole" + permission);
-            Method staffMemberAccessMethod = tournamentPermission.getClass().getMethod("getCanStaffMember" + permission);
-            List<TournamentRole> permittedRoles = (List<TournamentRole>) tournamentRoleAccessMethod.invoke(tournamentPermission);
-            List<StaffMember> permittedStaffMembers = (List<StaffMember>) staffMemberAccessMethod.invoke(tournamentPermission);
-            StaffMember staffMember = tournament.getStaffMembers()
-                    .stream()
-                    .filter(s -> s.getUser().getId().equals(user.getId()))
-                    .findFirst()
-                    .orElseThrow(ForbiddenException::new);
-            if (permittedRoles.stream().anyMatch(tournamentRole -> staffMember.getTournamentRoles().contains(tournamentRole)))
-                return true;
-            if (permittedStaffMembers.stream().anyMatch(permittedStaffMember -> permittedStaffMember.equals(staffMember)))
-                return true;
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-
+        if (!(auth.getPrincipal() instanceof UserPrincipal)) return false;
+        UserPrincipal userPrincipal = (UserPrincipal) auth.getPrincipal();
+        User user = userService.getUserFromPrincipal(userPrincipal);
+        Tournament tournament = tournamentService.getTournamentById(tournamentId);
+        if (tournament.getOwner().equals(user)) return true;
+        StaffMember staffMember = tournament.getStaffMembers()
+                .stream()
+                .filter(s -> s.getUser().getId().equals(user.getId()))
+                .findFirst()
+                .orElseThrow(ForbiddenException::new);
+        List<TournamentRole> permittedRoles = tournament.getPermissions()
+                .stream()
+                .filter(p -> p.getPermissionName().equals(permission))
+                .findFirst()
+                .map(Permission::getPermittedRoles)
+                .orElseThrow(() -> new RuntimeException("Permission not found"));
+        if (permittedRoles.stream().anyMatch(tournamentRole -> staffMember.getTournamentRoles().contains(tournamentRole)))
+            return true;
+        List<StaffMember> permittedStaffMembers = tournament.getPermissions()
+                .stream()
+                .filter(p -> p.getPermissionName().equals(permission))
+                .findFirst()
+                .map(Permission::getPermittedStaffMembers)
+                .orElseThrow(() -> new RuntimeException("Permission not found"));
+        if (permittedStaffMembers.stream().anyMatch(permittedStaffMember -> permittedStaffMember.equals(staffMember)))
+            return true;
         return false;
     }
 }
