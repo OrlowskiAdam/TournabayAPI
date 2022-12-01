@@ -58,7 +58,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
                 .filter(p -> p.getPermissionName().equals(permission))
                 .findFirst()
                 .map(Permission::getPermittedRoles)
-                .orElseThrow(() -> new RuntimeException("Permission not found"));
+                .orElseThrow(ForbiddenException::new);
         if (permittedRoles.stream().anyMatch(tournamentRole -> staffMember.getTournamentRoles().contains(tournamentRole)))
             return true;
         List<StaffMember> permittedStaffMembers = tournament.getPermissions()
@@ -66,7 +66,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
                 .filter(p -> p.getPermissionName().equals(permission))
                 .findFirst()
                 .map(Permission::getPermittedStaffMembers)
-                .orElseThrow(() -> new RuntimeException("Permission not found"));
+                .orElseThrow(ForbiddenException::new);
         if (permittedStaffMembers.stream().anyMatch(permittedStaffMember -> permittedStaffMember.equals(staffMember)))
             return true;
         return false;
