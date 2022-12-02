@@ -56,7 +56,14 @@ public class TournamentRoleService {
      * @return A list of TournamentRoles that are in the tournament and have an id that is in the list of ids.
      */
     public List<TournamentRole> getAllById(List<Long> ids, Tournament tournament) {
-        return tournament.getRoles().stream().filter(role -> ids.contains(role.getId())).collect(Collectors.toList());
+        List<TournamentRole> tournamentRoles = tournament.getRoles()
+                .stream()
+                .filter(role -> ids.contains(role.getId()))
+                .collect(Collectors.toList());
+        if (tournamentRoles.size() != ids.size()) {
+            throw new ResourceNotFoundException("One or more roles were not found");
+        }
+        return tournamentRoles;
     }
 
     /**
@@ -115,23 +122,18 @@ public class TournamentRoleService {
     /**
      * It creates a list of tournament roles, adds them to the tournament, and saves them to the database
      *
-     * @param tournament The tournament that the roles are being created for.
      * @return A list of tournament roles.
      */
-    public List<TournamentRole> createDefaultTournamentRoles(Tournament tournament) {
+    public List<TournamentRole> createDefaultTournamentRoles() {
         List<TournamentRole> tournamentRoles = new ArrayList<>();
-        TournamentRole masterRole = new TournamentRole("Host", tournament, true, false, 1);
-        tournamentRoles.add(masterRole);
-        tournamentRoles.add(new TournamentRole("Organizer", tournament, false, false, 2));
-        tournamentRoles.add(new TournamentRole("Pooler", tournament, false, false, 3));
-        tournamentRoles.add(new TournamentRole("Referee", tournament, false, false, 4));
-        tournamentRoles.add(new TournamentRole("Commentator", tournament, false, false, 5));
-        tournamentRoles.add(new TournamentRole("Streamer", tournament, false, false, 6));
-        TournamentRole defaultRole = new TournamentRole("Uncategorized", tournament, true, false, 7);
-        tournamentRoles.add(defaultRole);
-        tournament.setDefaultRole(defaultRole);
-        tournament.setMasterRole(masterRole);
-        return tournamentRoleRepository.saveAll(tournamentRoles);
+        tournamentRoles.add(new TournamentRole("Host", true, false, 1));
+        tournamentRoles.add(new TournamentRole("Organizer", false, false, 2));
+        tournamentRoles.add(new TournamentRole("Pooler", false, false, 3));
+        tournamentRoles.add(new TournamentRole("Referee", false, false, 4));
+        tournamentRoles.add(new TournamentRole("Commentator", false, false, 5));
+        tournamentRoles.add(new TournamentRole("Streamer", false, false, 6));
+        tournamentRoles.add(new TournamentRole("Uncategorized", true, false, 7));
+        return tournamentRoles;
     }
 
     /**
