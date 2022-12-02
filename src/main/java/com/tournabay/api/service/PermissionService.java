@@ -1,5 +1,6 @@
 package com.tournabay.api.service;
 
+import com.tournabay.api.dto.PermissionDto;
 import com.tournabay.api.model.Permission;
 import com.tournabay.api.model.Tournament;
 import com.tournabay.api.model.TournamentRole;
@@ -14,5 +15,7 @@ public interface PermissionService {
     Permission save(Permission permission);
 
     @SuppressWarnings("UnusedReturnValue")
-    Permission createDefaultPermission(Tournament tournament, List<TournamentRole> tournamentRoles);
+    List<Permission> createDefaultPermissions(List<TournamentRole> tournamentRoles);
+
+    List<Permission> updatePermissions(List<PermissionDto> permissionDtos, Tournament tournament);
 }

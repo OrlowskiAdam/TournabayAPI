@@ -34,7 +34,7 @@ public class TeamController {
      */
     @PostMapping("/create/{tournamentId}")
     @Secured("ROLE_USER")
-    @PreAuthorize("hasPermission(#tournamentId, 'ManageTeams')")
+    @PreAuthorize("hasPermission(#tournamentId, 'Teams')")
     public ResponseEntity<Team> createTeam(@PathVariable Long tournamentId, @Valid @RequestBody CreateTeamRequest createTeamRequest) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Team team = teamService.createTeam(
@@ -57,7 +57,7 @@ public class TeamController {
      */
     @DeleteMapping("/delete/{teamId}/{tournamentId}")
     @Secured("ROLE_USER")
-    @PreAuthorize("hasPermission(#tournamentId, 'ManageTeams')")
+    @PreAuthorize("hasPermission(#tournamentId, 'Teams')")
     public ResponseEntity<Team> deleteTeam(@PathVariable Long teamId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Team team = teamService.getById(teamId, tournament);
@@ -75,7 +75,7 @@ public class TeamController {
      */
     @PutMapping("/update/{teamId}/{tournamentId}")
     @Secured("ROLE_USER")
-    @PreAuthorize("hasPermission(#tournamentId, 'ManageTeams')")
+    @PreAuthorize("hasPermission(#tournamentId, 'Teams')")
     public ResponseEntity<Team> updateTeam(@PathVariable Long teamId, @PathVariable Long tournamentId, @Valid @RequestBody CreateTeamRequest createTeamRequest) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Team team = teamService.findById(teamId);

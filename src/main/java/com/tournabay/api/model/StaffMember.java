@@ -44,6 +44,10 @@ public class StaffMember {
     @ManyToOne
     private QualificationRoom qualificationRoom;
 
+    @JsonIgnore
+    @ManyToMany
+    private List<Permission> permissions;
+
     @PrePersist
     private void prePersist() {
         this.joinedAt = LocalDateTime.now();

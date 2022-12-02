@@ -1,7 +1,6 @@
 package com.tournabay.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,54 +22,15 @@ public class Permission {
     private Long id;
 
     @JsonIgnore
-    @OneToOne
+    @ManyToOne
     private Tournament tournament;
 
-    // ROLES
+    private String permissionName;
 
-    @OneToMany
-    private List<TournamentRole> canTournamentRoleManageRoles;
+    @ManyToMany(mappedBy = "permissions")
+    private List<TournamentRole> permittedRoles;
 
-    @OneToMany
-    private List<StaffMember> canStaffMemberManageRoles;
+    @ManyToMany(mappedBy = "permissions")
+    private List<StaffMember> permittedStaffMembers;
 
-    // STAFF MEMBERS
-
-    @OneToMany
-    private List<TournamentRole> canTournamentRoleManageStaffMembers;
-
-    @OneToMany
-    private List<StaffMember> canStaffMemberManageStaffMembers;
-
-    // ACCESS
-
-    @OneToMany
-    private List<TournamentRole> canTournamentRoleManageAccess;
-
-    @OneToMany
-    private List<StaffMember> canStaffMemberManageAccess;
-
-    // PARTICIPANTS
-
-    @OneToMany
-    private List<TournamentRole> canTournamentRoleManageParticipants;
-
-    @OneToMany
-    private List<StaffMember> canStaffMemberManageParticipants;
-
-    // TEAMS
-
-    @OneToMany
-    private List<TournamentRole> canTournamentRoleManageTeams;
-
-    @OneToMany
-    private List<StaffMember> canStaffMemberManageTeams;
-
-    // SETTINGS
-
-    @OneToMany
-    private List<TournamentRole> canTournamentRoleManageSettings;
-
-    @OneToMany
-    private List<StaffMember> canStaffMemberManageSettings;
 }

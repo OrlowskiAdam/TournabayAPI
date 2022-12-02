@@ -124,6 +124,22 @@ public class StaffMemberService {
     }
 
     /**
+     * Create a new StaffMember object with the given osuId, tournamentRoles, and discordId.
+     *
+     * @param osuId The osu! user ID of the user you want to add.
+     * @return A StaffMember object
+     */
+    public StaffMember createHost(Long osuId, TournamentRole masterRole) {
+        User user = userService.addUserByOsuId(osuId);
+        return StaffMember.builder()
+                .user(user)
+                .status(StaffMemberStatus.JOINED) // TODO: Feature - allow / disable tournament invitations
+                .tournamentRoles(new ArrayList<>(List.of(masterRole)))
+                .discordId(user.getDiscordId())
+                .build();
+    }
+
+    /**
      * If the staff member is not in the tournament, throw an exception. If the staff member is the owner of the
      * tournament, throw an exception. Otherwise, delete the staff member.
      *
