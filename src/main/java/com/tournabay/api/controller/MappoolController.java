@@ -10,6 +10,8 @@ import com.tournabay.api.security.UserPrincipal;
 import com.tournabay.api.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,6 +48,8 @@ public class MappoolController {
      * @return A list of mappools
      */
     @GetMapping("/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Mappool')")
     public ResponseEntity<List<Mappool>> getTournamentMappools(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         List<Mappool> tournamentMappools = mappoolService.findAllByTournament(tournament);
@@ -61,6 +65,8 @@ public class MappoolController {
      * @return A ResponseEntity object is being returned.
      */
     @PostMapping("/create/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Mappool')")
     public ResponseEntity<Mappool> createMappool(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody CreateMappoolRequest body) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Mappool mappool = mappoolService.createMappool(tournament, body.getStage(), body.getName());
@@ -77,6 +83,8 @@ public class MappoolController {
      * @return A ResponseEntity with the updated mappool.
      */
     @PostMapping("/{mappoolId}/{tournamentId}/beatmap/add")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Mappool')")
     public ResponseEntity<Mappool> addBeatmap(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long mappoolId, @PathVariable Long tournamentId, @RequestBody AddBeatmapToMappool body) {
         User user = userService.getUserFromPrincipal(userPrincipal);
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
@@ -98,6 +106,8 @@ public class MappoolController {
      * @return A ResponseEntity object is being returned.
      */
     @DeleteMapping("/{mappoolId}/{tournamentId}/delete")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Mappool')")
     public ResponseEntity<Mappool> deleteMappool(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long mappoolId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Mappool mappool = mappoolService.findById(tournament, mappoolId);
@@ -115,6 +125,8 @@ public class MappoolController {
      * @return A ResponseEntity with the mappool.
      */
     @DeleteMapping("/{mappoolId}/{tournamentId}/beatmap/{beatmapId}/delete")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Mappool')")
     public ResponseEntity<Mappool> deleteBeatmap(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long mappoolId, @PathVariable Long tournamentId, @PathVariable Long beatmapId) {
         User user = userService.getUserFromPrincipal(userPrincipal);
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
@@ -136,6 +148,8 @@ public class MappoolController {
      * @return A ResponseEntity with the updated mappool.
      */
     @PostMapping("/{mappoolId}/{tournamentId}/beatmap-reorder")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Mappool')")
     public ResponseEntity<Mappool> reorderBeatmap(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long mappoolId, @PathVariable Long tournamentId, @RequestBody ReorderBeatmapRequest body) {
         User user = userService.getUserFromPrincipal(userPrincipal);
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
@@ -153,6 +167,8 @@ public class MappoolController {
      * @return A ResponseEntity with the updated mappool.
      */
     @PutMapping("/{mappoolId}/{tournamentId}/publish")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Mappool')")
     public ResponseEntity<Mappool> publishMappool(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long mappoolId, @PathVariable Long tournamentId) {
         User user = userService.getUserFromPrincipal(userPrincipal);
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
@@ -170,6 +186,8 @@ public class MappoolController {
      * @return A ResponseEntity with the updated mappool.
      */
     @PutMapping("/{mappoolId}/{tournamentId}/conceal")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Mappool')")
     public ResponseEntity<Mappool> concealMappool(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long mappoolId, @PathVariable Long tournamentId) {
         User user = userService.getUserFromPrincipal(userPrincipal);
         Tournament tournament = tournamentService.getTournamentById(tournamentId);

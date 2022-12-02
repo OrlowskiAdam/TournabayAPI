@@ -30,9 +30,9 @@ public class ParticipantController {
      * @param tournamentId The id of the tournament you want to add the participant to.
      * @return A ResponseEntity with the added participant.
      */
-    @Secured("ROLE_USER")
-    @PreAuthorize("hasPermission(#tournamentId, 'ManageParticipants')")
     @PostMapping("/add/{osuId}/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Participants')")
     public ResponseEntity<Participant> addParticipant(@PathVariable Long osuId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Participant participant = participantService.getByOsuId(osuId, tournament);
@@ -48,9 +48,9 @@ public class ParticipantController {
      * @param tournamentId  The id of the tournament that the participant is in.
      * @return A ResponseEntity with a status code of 200.
      */
-    @Secured("ROLE_USER")
-    @PreAuthorize("hasPermission(#tournamentId, 'ManageParticipants')")
     @PostMapping("/delete/{participantId}/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Participants')")
     public ResponseEntity<Void> deleteParticipant(@PathVariable Long participantId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         participantService.deleteById(participantId, tournament);

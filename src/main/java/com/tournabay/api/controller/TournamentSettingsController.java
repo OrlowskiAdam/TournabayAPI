@@ -21,17 +21,13 @@ public class TournamentSettingsController {
     /**
      * If the user has permission to update the settings, update the settings.
      *
-     * The first thing we do is get the tournament and the user. We then check if the user has permission to update the
-     * settings. If they do, we update the settings
-     *
-     * information.
      * @param tournamentId The id of the tournament you want to update the settings for.
      * @param body The body of the request. This is the object with new tournament settings.
      * @return A ResponseEntity with the updated settings.
      */
     @PatchMapping("/tournament/{tournamentId}/settings")
     @Secured("ROLE_USER")
-    @PreAuthorize("hasPermission(#tournamentId, 'ManageSettings')")
+    @PreAuthorize("hasPermission(#tournamentId, 'Settings')")
     public ResponseEntity<Settings> updateSettings(@PathVariable Long tournamentId, @RequestBody Settings body) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Settings settings = settingsService.updateSettings(tournament, body);

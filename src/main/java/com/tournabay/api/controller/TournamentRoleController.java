@@ -15,6 +15,7 @@ import com.tournabay.api.service.TournamentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -31,7 +32,7 @@ public class TournamentRoleController {
 
     @PostMapping("/add/{tournamentId}")
     @Secured("ROLE_USER")
-    // TODO: Security check
+    @PreAuthorize("hasPermission(#tournamentId, 'Roles')")
     public ResponseEntity<TournamentRole> addTournamentRole(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody CreateTournamentRoleRequest createTournamentRoleRequest) {
         if (createTournamentRoleRequest.getRoleName() == null || createTournamentRoleRequest.getRoleName().equals("")) throw new BadRequestException("Please specify role name!");
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
@@ -46,6 +47,7 @@ public class TournamentRoleController {
 
     @PatchMapping("/update/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Roles')")
     public ResponseEntity<TournamentRole> updateTournamentRole(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody UpdateTournamentRoleRequest updateTournamentRoleRequest) {
         if (updateTournamentRoleRequest.getRoleName() == null || updateTournamentRoleRequest.getRoleName().equals("")) throw new BadRequestException("Please specify role name!");
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
@@ -56,6 +58,7 @@ public class TournamentRoleController {
 
     @DeleteMapping("/remove/{roleId}/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Roles')")
     @Transactional
     public ResponseEntity<TournamentRoleRemovalDto> removeTournamentRole(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long roleId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
@@ -68,6 +71,7 @@ public class TournamentRoleController {
 
     @PatchMapping("/save-position/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Roles')")
     public ResponseEntity<List<TournamentRole>> saveRolesPosition(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody List<TournamentRole> tournamentRoles) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         tournamentRoles.forEach(tournamentRole -> tournamentRole.setTournament(tournament));

@@ -14,6 +14,8 @@ import com.tournabay.api.service.UserService;
 import com.tournabay.api.payload.CreateQualificationRoomRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,12 +30,16 @@ public class QualificationRoomController {
     private final StaffMemberService staffMemberService;
 
     @GetMapping("/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationRooms')")
     public ResponseEntity<?> getQualificationRooms(@PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         return ResponseEntity.ok(qualificationRoomService.getQualificationRooms(tournament));
     }
 
     @PostMapping("/create/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationRooms')")
     public ResponseEntity<QualificationRoom> createQualificationRoom(
             @CurrentUser UserPrincipal userPrincipal,
             @PathVariable Long tournamentId,
@@ -45,6 +51,8 @@ public class QualificationRoomController {
     }
 
     @PutMapping("/update/{qualificationRoomId}/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationRooms')")
     public ResponseEntity<QualificationRoom> updateQualificationRoom(
             @CurrentUser UserPrincipal userPrincipal,
             @PathVariable Long qualificationRoomId,
@@ -58,6 +66,8 @@ public class QualificationRoomController {
     }
 
     @DeleteMapping("/remove/{qualificationRoomId}/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationRooms')")
     public ResponseEntity<List<QualificationRoom>> removeQualificationRoom(
             @CurrentUser UserPrincipal userPrincipal,
             @PathVariable Long qualificationRoomId,
@@ -71,6 +81,8 @@ public class QualificationRoomController {
     }
 
     @PutMapping("/add-staff-member/{qualificationRoomId}/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationRooms')")
     public ResponseEntity<QualificationRoom> addStaffMember(
             @CurrentUser UserPrincipal userPrincipal,
             @PathVariable Long qualificationRoomId,
@@ -85,6 +97,8 @@ public class QualificationRoomController {
     }
 
     @PutMapping("/remove-staff-member/{qualificationRoomId}/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationRooms')")
     public ResponseEntity<QualificationRoom> removeStaffMember(
             @CurrentUser UserPrincipal userPrincipal,
             @PathVariable Long qualificationRoomId,

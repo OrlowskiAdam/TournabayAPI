@@ -14,6 +14,7 @@ import com.tournabay.api.service.TournamentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,8 +30,7 @@ public class StaffMemberController {
 
     @PostMapping("/add/{tournamentId}")
     @Secured("ROLE_USER")
-    // TODO: Security Check
-    // TODO: Roles should be taken from tournament, not directly from database
+    @PreAuthorize("hasPermission(#tournamentId, 'Staff')")
     public ResponseEntity<StaffMember> addStaffMember(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody @Valid AddStaffMemberRequest addStaffMemberRequest) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         List<TournamentRole> tournamentRoles = tournamentRoleService.getAllById(addStaffMemberRequest.getTournamentRoleIds());
@@ -40,6 +40,7 @@ public class StaffMemberController {
 
     @DeleteMapping("/remove/{staffMemberId}/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Staff')")
     public ResponseEntity<Void> removeStaffMember(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @PathVariable Long staffMemberId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         StaffMember staffMember = staffMemberService.getStaffMemberById(staffMemberId, tournament);
@@ -49,7 +50,7 @@ public class StaffMemberController {
 
     @PostMapping("/remove/{tournamentId}")
     @Secured("ROLE_USER")
-    // TODO: Security check
+    @PreAuthorize("hasPermission(#tournamentId, 'Staff')")
     public ResponseEntity<List<StaffMember>> removeStaffMembers(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody RemoveStaffMembersRequest removeStaffMembersRequest) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         List<StaffMember> staffMembers = staffMemberService.getStaffMembersById(removeStaffMembersRequest.getStaffMemberIds(), tournament);
@@ -59,7 +60,7 @@ public class StaffMemberController {
 
     @PatchMapping("/update/{tournamentId}")
     @Secured("ROLE_USER")
-    // TODO: Security check
+    @PreAuthorize("hasPermission(#tournamentId, 'Staff')")
     public ResponseEntity<StaffMember> updateStaffMember(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody UpdateStaffMemberRequest updateStaffMemberRequest) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         List<TournamentRole> tournamentRoles = tournamentRoleService.getAllById(updateStaffMemberRequest.getTournamentRoleIds(), tournament);

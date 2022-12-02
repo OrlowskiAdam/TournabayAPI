@@ -12,6 +12,8 @@ import com.tournabay.api.service.*;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,6 +30,8 @@ public class QualificationResultsController {
     private final ParticipantService participantService;
 
     @PostMapping("/submit/lobby/{lobbyId}/room/{roomId}/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationResults')")
     public ResponseEntity<List<QualificationResult>> submitQualificationResults(
             @CurrentUser UserPrincipal userPrincipal,
             @PathVariable Long lobbyId,
@@ -43,6 +47,8 @@ public class QualificationResultsController {
     }
 
     @GetMapping("/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationResults')")
     public ResponseEntity<List<?>> getQualificationResults(@PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         if (tournament instanceof TeamBasedTournament) {
@@ -53,6 +59,8 @@ public class QualificationResultsController {
     }
 
     @GetMapping("/tournament/{tournamentId}/team/{teamId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationResults')")
     public ResponseEntity<List<QualificationResult>> getQualificationResultsForTeam(@PathVariable Long tournamentId, @PathVariable Long teamId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Team team = teamService.getById(teamId, tournament);
@@ -64,6 +72,8 @@ public class QualificationResultsController {
     }
 
     @PutMapping("/update/tournament/{tournamentId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationResults')")
     public ResponseEntity<List<QualificationResultDto>> updateQualificationResultsForTeam(@PathVariable Long tournamentId, @RequestBody UpdateParticipantQualificationScoresRequest body) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         List<QualificationResultDto> results = qualificationResultsService.updateQualificationResults(body.getQualificationResults(), tournament);
@@ -71,6 +81,8 @@ public class QualificationResultsController {
     }
 
     @DeleteMapping("/delete/tournament/{tournamentId}/team/{teamId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationResults')")
     public ResponseEntity<?> deleteQualificationResultsForTeam(@PathVariable Long tournamentId, @PathVariable Long teamId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Team team = teamService.getById(teamId, tournament);
@@ -79,6 +91,8 @@ public class QualificationResultsController {
     }
 
     @DeleteMapping("/delete/tournament/{tournamentId}/participant/{participantId}")
+    @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'QualificationResults')")
     public ResponseEntity<List<?>> deleteQualificationResultsForParticipant(@PathVariable Long tournamentId, @PathVariable Long participantId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Participant participant = participantService.getById(participantId, tournament);

@@ -11,6 +11,7 @@ import com.tournabay.api.service.TournamentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -80,6 +81,7 @@ public class GroupController {
      */
     @PostMapping("/tournament/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Groups')")
     public ResponseEntity<Group> createGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.createGroup(tournament);
@@ -96,6 +98,7 @@ public class GroupController {
      */
     @DeleteMapping("/{groupId}/tournament/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Groups')")
     public ResponseEntity<List<Group>> deleteGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -114,6 +117,7 @@ public class GroupController {
      */
     @PostMapping("/{groupId}/tournament/{tournamentId}/team/{teamId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Groups')")
     public ResponseEntity<Group> assignTeamToGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long teamId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -132,6 +136,7 @@ public class GroupController {
      */
     @PostMapping("/{groupId}/tournament/{tournamentId}/participant/{participantId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Groups')")
     public ResponseEntity<Group> assignParticipantToGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long participantId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -150,6 +155,7 @@ public class GroupController {
      */
     @DeleteMapping("/{groupId}/tournament/{tournamentId}/team/{teamId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Groups')")
     public ResponseEntity<Group> removeTeamFromGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long teamId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -168,6 +174,7 @@ public class GroupController {
      */
     @DeleteMapping("/{groupId}/tournament/{tournamentId}/participant/{participantId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Groups')")
     public ResponseEntity<Group> removeParticipantFromGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long participantId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Group group = groupService.findById(tournament, groupId);
@@ -186,6 +193,7 @@ public class GroupController {
      */
     @PostMapping("/{groupId}/tournament/{tournamentId}/match/{matchId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Groups')")
     public ResponseEntity<Group> assignMatchToGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long matchId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Match match = matchService.findById(tournament, matchId);
@@ -205,6 +213,7 @@ public class GroupController {
      */
     @PostMapping("/{groupId}/tournament/{tournamentId}/match/{matchId}/exclude")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Groups')")
     public ResponseEntity<Group> excludeMatchFromGroup(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long groupId, @PathVariable Long tournamentId, @PathVariable Long matchId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Match match = matchService.findById(tournament, matchId);

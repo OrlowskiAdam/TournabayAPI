@@ -10,6 +10,7 @@ import com.tournabay.api.service.TournamentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +22,7 @@ public class MatchController {
 
     @PostMapping("/create-player-vs/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Matches')")
     public ResponseEntity<Match> createPlayerVsMatch(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody CreatePlayerVsMatchRequest body) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Match match = matchService.createPlayerVsMatch(tournament, body);
@@ -29,6 +31,7 @@ public class MatchController {
 
     @PostMapping("/create-team-vs/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Matches')")
     public ResponseEntity<Match> createTeamVsMatch(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @RequestBody CreateTeamVsMatchRequest body) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Match match = matchService.createTeamVsMatch(tournament, body);
@@ -37,6 +40,7 @@ public class MatchController {
 
     @PostMapping("/update-player-vs/{matchId}/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Matches')")
     public ResponseEntity<Match> updatePlayerVsMatch(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long matchId, @PathVariable Long tournamentId, @RequestBody UpdatePlayerVsMatch body) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Match match = matchService.findById(tournament, matchId);
@@ -46,6 +50,7 @@ public class MatchController {
 
     @PostMapping("/update-team-vs/{matchId}/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Matches')")
     public ResponseEntity<Match> updateTeamVsMatch(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long matchId, @PathVariable Long tournamentId, @RequestBody UpdateTeamVsMatch body) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Match match = matchService.findById(tournament, matchId);
@@ -55,6 +60,7 @@ public class MatchController {
 
     @DeleteMapping("/delete/{matchId}/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Matches')")
     public ResponseEntity<Match> deleteMatch(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @PathVariable Long matchId) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Match match = matchService.removeMatchById(tournament, matchId);
@@ -63,6 +69,7 @@ public class MatchController {
 
     @PostMapping("/submit-result/{matchId}/{tournamentId}")
     @Secured("ROLE_USER")
+    @PreAuthorize("hasPermission(#tournamentId, 'Matches')")
     public ResponseEntity<Match> submitResult(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long tournamentId, @PathVariable Long matchId, @RequestBody MatchResultRequest body) {
         Tournament tournament = tournamentService.getTournamentById(tournamentId);
         Match match = matchService.findById(tournament, matchId);
