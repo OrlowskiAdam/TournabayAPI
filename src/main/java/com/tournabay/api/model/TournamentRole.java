@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,6 +22,14 @@ public class TournamentRole {
         this.isProtected = isProtected;
         this.isHidden = isHidden;
         this.position = position;
+    }
+
+    public TournamentRole(String name, boolean isProtected, boolean isHidden, int position) {
+        this.name = name;
+        this.isProtected = isProtected;
+        this.isHidden = isHidden;
+        this.position = position;
+        this.permissions = new ArrayList<>();
     }
 
     @Id
@@ -40,6 +50,10 @@ public class TournamentRole {
 
     @NotNull
     private Integer position;
+
+    @JsonIgnore
+    @ManyToMany
+    private List<Permission> permissions;
 
     @JsonIgnore
     @NotNull
