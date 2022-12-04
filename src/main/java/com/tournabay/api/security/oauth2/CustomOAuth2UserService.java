@@ -66,19 +66,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return null;
     }
 
-    private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
+    private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2OsuUserInfo) {
         Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
                 .orElseThrow(() -> new AppException("User Role not set."));
         User user = new User(
-                oAuth2UserInfo.getUsername(),
-                oAuth2UserInfo.getOsuId(),
-                oAuth2UserInfo.getAvatarUrl(),
-                oAuth2UserInfo.getCoverUrl(),
-                oAuth2UserInfo.getCountryCode(),
+                oAuth2OsuUserInfo.getUsername(),
+                oAuth2OsuUserInfo.getOsuId(),
+                oAuth2OsuUserInfo.getAvatarUrl(),
+                oAuth2OsuUserInfo.getCoverUrl(),
+                oAuth2OsuUserInfo.getCountryCode(),
                 0,
                 0,
-                oAuth2UserInfo.pmFriendsOnly(),
-                oAuth2UserInfo.isBot(),
+                oAuth2OsuUserInfo.pmFriendsOnly(),
+                oAuth2OsuUserInfo.isBot(),
                 oAuth2UserRequest.getAccessToken().getTokenValue(),
                 AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()),
                 Collections.singleton(userRole)
@@ -86,13 +86,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return userRepository.save(user);
     }
 
-    private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo, OAuth2UserRequest oAuth2UserRequest) {
-        existingUser.setUsername(oAuth2UserInfo.getUsername());
-        existingUser.setAvatarUrl(oAuth2UserInfo.getAvatarUrl());
-        existingUser.setCountryCode(oAuth2UserInfo.getCountryCode());
-        existingUser.setCoverUrl(oAuth2UserInfo.getCoverUrl());
-        existingUser.setIsBot(oAuth2UserInfo.isBot());
-        existingUser.setPmFriendsOnly(oAuth2UserInfo.pmFriendsOnly());
+    private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2OsuUserInfo, OAuth2UserRequest oAuth2UserRequest) {
+        existingUser.setUsername(oAuth2OsuUserInfo.getUsername());
+        existingUser.setAvatarUrl(oAuth2OsuUserInfo.getAvatarUrl());
+        existingUser.setCountryCode(oAuth2OsuUserInfo.getCountryCode());
+        existingUser.setCoverUrl(oAuth2OsuUserInfo.getCoverUrl());
+        existingUser.setIsBot(oAuth2OsuUserInfo.isBot());
+        existingUser.setPmFriendsOnly(oAuth2OsuUserInfo.pmFriendsOnly());
         existingUser.setOsuToken(oAuth2UserRequest.getAccessToken().getTokenValue());
         return userRepository.save(existingUser);
     }

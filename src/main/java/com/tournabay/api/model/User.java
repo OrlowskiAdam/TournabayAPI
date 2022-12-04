@@ -3,6 +3,7 @@ package com.tournabay.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -15,10 +16,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name="\"user\"")
+@NoArgsConstructor
 public class User {
-
-    public User() {
-    }
 
     public User(
             @NotBlank String username,
@@ -46,6 +45,7 @@ public class User {
         this.osuToken = osuToken;
         this.provider = provider;
         this.roles = roles;
+        this.discordData = new HashSet<>();
     }
 
     public User(
@@ -66,6 +66,7 @@ public class User {
         this.rank = rank;
         this.performancePoints = performancePoints;
         this.countryCode = countryCode;
+        this.discordData = new HashSet<>();
     }
 
     @Id
@@ -99,6 +100,9 @@ public class User {
     @NotNull
     @Enumerated(EnumType.STRING)
     private AuthProvider provider;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<DiscordData> discordData = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
